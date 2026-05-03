@@ -326,8 +326,7 @@ WGM-Voice-Assistant/
 ├── WGM-ALL-DEVICES.PY           # Main assistant file — everything is here
 ├── requirements.txt    # Python dependencies
 ├── README.md           # This file
-│
-└── ~/.wgm_name         # Auto-created — stores your custom assistant name
+│── SETUP.txt
 ```
 
 ---
@@ -341,7 +340,7 @@ For spoken weather (instead of opening browser):
 3. Paste it in `WGM-ALL-DEVICES.PY`:
 ```python
 WEATHER_API_KEY = "your-openweathermap-key-here"
-DEFAULT_CITY    = "Pune"   # your default city
+DEFAULT_CITY    = "Pune"   # your default city ( line 115)
 ```
 
 ---
