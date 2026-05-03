@@ -1,4 +1,4 @@
-# WGM-PERSONAL-AUTOMATION-ASSISTANT
+# WGM (WIRED-GUIDANCE-MIND) PERSONAL-AUTOMATION-ASSISTANT
 This is a automation tool for any device to help with controlling your whole device laptop or mac just with your voice all you need is python any version downloaded and just download the requirements.txt setup your open router api key and you are good to go.
 <div align="center">
 
@@ -42,7 +42,8 @@ This is a automation tool for any device to help with controlling your whole dev
 
 ## 🚀 Quick Start
 
-### DO READ THE SETUP.TXT FOR PROPER SETUP OF THE ASSISTANT
+### * IMPORTANT PLEASE DO READ THE SETUP.TXT FOR PROPER SETUP OF THE ASSISTANT
+
 
 ### 1. Get a free OpenRouter API key
 Go to [openrouter.ai](https://openrouter.ai) → Sign up → **Keys** → **Create Key**  
@@ -53,6 +54,7 @@ Open `WGM-ALL-DEVICES.PY` and find line ~107:
 ```python
 OPENROUTER_API_KEY = "paste-your-key-here"
 ```
+### Set your default city in line 115
 
 ### 3. Install dependencies
 
