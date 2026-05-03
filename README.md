@@ -4,7 +4,7 @@ This is a automation tool for any device to help with controlling your whole dev
 
 # 🤖 W.G.M — AI Voice Assistant
 
-### *Your personal J.A.R.V.I.S — powered by free AI*
+### *Your personal W.G.M — powered by free AI*
 
 ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey?style=for-the-badge)
@@ -42,12 +42,14 @@ This is a automation tool for any device to help with controlling your whole dev
 
 ## 🚀 Quick Start
 
+### DO READ THE SETUP.TXT FOR PROPER SETUP OF THE ASSISTANT
+
 ### 1. Get a free OpenRouter API key
 Go to [openrouter.ai](https://openrouter.ai) → Sign up → **Keys** → **Create Key**  
 Copy the key — it looks like `sk-or-v1-xxxxxxxxxx`
 
-### 2. Paste your key in `jarvis.py`
-Open `jarvis.py` and find line ~73:
+### 2. Paste your key in `WGM-ALL-DEVICES.PY`
+Open `WGM-ALL-DEVICES.PY` and find line ~107:
 ```python
 OPENROUTER_API_KEY = "paste-your-key-here"
 ```
@@ -74,15 +76,15 @@ pip3 install -r requirements.txt
 
 ### 4. Run it
 ```bash
-python3 jarvis.py         # macOS / Linux
-python jarvis.py          # Windows
+python3 WGM-ALL-DEVICES.PY         # macOS / Linux
+python WGM-ALL-DEVICES.PY          # Windows
 ```
 
 ### 5. Quick test (no mic needed)
 ```bash
-python3 jarvis.py "what time is it"
-python3 jarvis.py "what is 1 + 1"
-python3 jarvis.py "give me a report on India GDP"
+python3 WGM-ALL-DEVICES.PY "what time is it"
+python3 WGM-ALL-DEVICES.PY "what is 1 + 1"
+python3 WGM-ALL-DEVICES.PY "give me a report on India GDP"
 ```
 
 ---
@@ -274,7 +276,7 @@ It's like having all models at once. When you don't care which model answers, th
 
 ## 🔧 Changing the AI Model
 
-Open `jarvis.py` and find the `OPENROUTER_MODELS` list near the top:
+Open `WGM-ALL-DEVICES.PY` and find the `OPENROUTER_MODELS` list near the top:
 
 ```python
 OPENROUTER_MODELS = [
@@ -293,18 +295,18 @@ The first model in the list is always tried first. Rearrange to change priority.
 
 ## 🎙️ Voice Settings
 
-Open `jarvis.py` and find:
+Open `WGM-ALL-DEVICES.PY` and find:
 
 ```python
 VOICE_NAME  = "Samantha"   # Change this
 VOICE_RATE  = 178          # Words per minute
 ```
 
-**Best macOS voices for a Jarvis feel:**
+**Best macOS voices for a WGM feel:**
 
 | Voice | Style | Command to preview |
 |---|---|---|
-| `Daniel` | Deep British male — most JARVIS-like ✅ | `say -v Daniel "Hello sir"` |
+| `Daniel` | Deep British male — most WGM-like ✅ | `say -v Daniel "Hello sir"` |
 | `Samantha` | Clear US female — current default | `say -v Samantha "Hello sir"` |
 | `Alex` | US male, natural | `say -v Alex "Hello sir"` |
 | `Victoria` | British female | `say -v Victoria "Hello sir"` |
@@ -319,7 +321,7 @@ Run `say -v ?` in Terminal to see all voices installed on your Mac.
 ```
 WGM-Voice-Assistant/
 │
-├── jarvis.py           # Main assistant file — everything is here
+├── WGM-ALL-DEVICES.PY           # Main assistant file — everything is here
 ├── requirements.txt    # Python dependencies
 ├── README.md           # This file
 │
@@ -334,7 +336,7 @@ For spoken weather (instead of opening browser):
 
 1. Sign up free at [openweathermap.org](https://openweathermap.org/api)
 2. Copy your API key
-3. Paste it in `jarvis.py`:
+3. Paste it in `WGM-ALL-DEVICES.PY`:
 ```python
 WEATHER_API_KEY = "your-openweathermap-key-here"
 DEFAULT_CITY    = "Pune"   # your default city
@@ -380,7 +382,7 @@ pip3 install pyaudio
 ```
 
 **"AI is not configured"**  
-→ You haven't pasted your OpenRouter key yet. Open `jarvis.py` line ~73.
+→ You haven't pasted your OpenRouter key yet. Open `WGM-ALL-DEVICES.PY` line ~73.
 
 **"All AI models unavailable"**  
 → All 6 free models hit rate limits simultaneously (rare). Wait 1-2 minutes and try again, or sign up for OpenRouter credits ($5 lasts months).
@@ -399,7 +401,7 @@ MIT License — free to use, modify, and distribute.
 
 ---
 
-## 🙏 Built With
+##  Built With
 
 - [OpenRouter](https://openrouter.ai) — free AI model access
 - [DuckDuckGo API](https://duckduckgo.com) — free web search
