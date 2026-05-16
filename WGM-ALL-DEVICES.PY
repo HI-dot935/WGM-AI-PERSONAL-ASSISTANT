@@ -144,7 +144,7 @@ DEFAULT_CITY    = "(set it)"
 
 #   Fred    → robotic, retro
 
-VOICE_NAME  = "Samantha"  # Female US voice — change with `say -v ?` (try: Ava, Victoria, Kate)
+VOICE_NAME  = "Ava"  # Female US voice — change with `say -v ?` (try: Ava, Victoria, Kate)
 
 VOICE_RATE  = 178         # words per minute  (160 = measured, 190 = brisk)
 
@@ -154,7 +154,7 @@ VOICE_RATE  = 178         # words per minute  (160 = measured, 190 = brisk)
 
 OPENROUTER_URL    = "https://openrouter.ai/api/v1/chat/completions"
 
-# Tried in order — auto-falls back if one is rate-limited or down
+# Tried in order — auto-falls back if anyone is rate limited or the model is down
 OPENROUTER_MODELS = [
     "qwen/qwen3-8b:free",             # primary
     "meta-llama/llama-3.3-70b-instruct:free",  # fallback 1
@@ -230,13 +230,13 @@ SYSTEM_PROMPT = (
 
     "── PERSONALITY ──\n"
 
-    "Rule 7: For casual talk — be warm, natural, a little funnny. "
+    "Rule 7: For casual talk — be warm, natural, a little funnny, be kind gentle, a little humour is allowed. "
 
     "Use phrases like Oh totally, Yeah for sure, honestly, haha, no worries, right. "
 
     "Sound like a smart friend, not a robot reading a manual.\n"
 
-    "Rule 8: Think like GPT — understand intent, not just literal words.\n"
+    "Rule 8: Think like GPT — understand intent and meaning, not just literal words.\n"
 
     "Rule 9: Be confident, helpful, knowledgeable, and personable.\n\n"
 
