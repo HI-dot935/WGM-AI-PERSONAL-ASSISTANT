@@ -1947,6 +1947,125 @@ MAC_APPS = {
 
 
 WEBSITES = {
+     "jio cinema":       "https://jiocinema.com",
+
+    "jiocinema":        "https://jiocinema.com",
+
+    "mxplayer":         "https://mxplayer.in",
+
+    "mx player":        "https://mxplayer.in",
+
+    "swiggy":           "https://swiggy.com",
+
+    "zomato":           "https://zomato.com",
+
+    "bigbasket":        "https://bigbasket.com",
+
+    "zepto":            "https://zeptonow.com",
+
+    "blinkit":          "https://blinkit.com",
+
+    #NEWS
+
+    "ndtv":             "https://ndtv.com",
+
+    "timesofindia":     "https://timesofindia.indiatimes.com",
+
+    "times of india":   "https://timesofindia.indiatimes.com",
+
+    # Tech / Dev
+    "hugging face":     "https://huggingface.co",
+
+    "huggingface":      "https://huggingface.co",
+
+    "leetcode":         "https://leetcode.com",
+
+    "replit":           "https://replit.com",
+
+    "vercel":           "https://vercel.com",
+
+    "docker hub":       "https://hub.docker.com",
+
+    "npm":              "https://npmjs.com",
+
+    "pypi":             "https://pypi.org",
+
+    "digitalocean":     "https://digitalocean.com",
+
+    # Finance
+
+    "zerodha":          "https://zerodha.com",
+
+    "groww":            "https://groww.in",
+
+    "binance":          "https://binance.com",
+
+    "trading view":     "https://tradingview.com",
+
+    "tradingview":      "https://tradingview.com",
+
+    # Productivity / Tools
+
+    "figma":            "https://figma.com",
+
+    "canva":            "https://canva.com",
+
+    "loom":             "https://loom.com",
+
+    "google slides":    "https://slides.google.com",
+
+    "google forms":     "https://forms.google.com",
+
+    "google calendar":  "https://calendar.google.com",
+
+    "google keep":      "https://keep.google.com",
+
+    "google photos":    "https://photos.google.com",
+
+    # AI
+
+    "gemini":           "https://gemini.google.com",
+
+    "perplexity":       "https://perplexity.ai",
+
+    "mistral":          "https://chat.mistral.ai",
+
+    "groq":             "https://groq.com",
+
+    "grok":             "https://grok.com",
+
+    "poe":              "https://poe.com",
+
+    "character ai":     "https://character.ai",
+
+    # Social / News
+
+    "threads":          "https://threads.net",
+
+    "pinterest":        "https://pinterest.com",
+
+    "snapchat":         "https://snapchat.com",
+
+    "quora":            "https://quora.com",
+
+    "bbc":              "https://bbc.com",
+
+    "cnn":              "https://cnn.com",
+
+
+    # Entertainment
+
+    "twitch":           "https://twitch.tv",
+
+    "disney plus":      "https://disneyplus.com",
+
+    "apple tv":         "https://tv.apple.com",
+
+    "plex":             "https://app.plex.tv",
+
+    "soundcloud":       "https://soundcloud.com",
+
+    "apple music":      "https://music.apple.com",
 
     "youtube":          "https://youtube.com",
 
