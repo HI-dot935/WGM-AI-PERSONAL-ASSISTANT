@@ -1,14 +1,14 @@
-"""
+
 
 ╔══════════════════════════════════════════════════════════════╗
 
-║   W G M  —  AI Voice Assistant  v4.0  (Cross-Platform)      ║
+║   W G M  —  AI Voice Assistant  v5.0  (Cross-Platform)       ║
 
-║   Windows 10/11 · macOS 10.15+ · Linux (Ubuntu 20+)         ║
+║   Windows 10/11 · macOS 10.15+ · Linux (Ubuntu 20+)          ║
+ 
+║   Works on Python 3.9+                                       ║
 
-║   Python 3.9+                                                ║
-
-║   Powered by OpenRouter · DuckDuckGo · Wikipedia             ║
+║   Uses OpenRouter · DuckDuckGo · Wikipedia · Google          ║
 
 ╚══════════════════════════════════════════════════════════════╝
 
@@ -162,7 +162,23 @@ OPENROUTER_MODELS = [
     "mistralai/mistral-7b-instruct:free",      # fallback 3
     "openrouter/auto",                # last resort — OpenRouter picks anything available
 ]
-   
+USE_PAID_MODEL       = False                    # ← flip to True to use a paid model
+PREFERRED_PAID_MODEL = "openai/gpt-4o-mini"    # ← paste your chosen model string here
+ 
+# Popular paid model strings from openrouter.ai/models :
+#   "openai/gpt-4o"                       → GPT-4o  (best overall)
+#   "openai/gpt-4o-mini"                  → GPT-4o Mini  (cheap + smart)
+#   "anthropic/claude-sonnet-4-5"         → Claude Sonnet
+#   "anthropic/claude-haiku-4-5"          → Claude Haiku  (fast + cheap)
+#   "google/gemini-2.0-flash-001"         → Gemini 2.0 Flash
+#   "meta-llama/llama-3.1-405b-instruct"  → Llama 405B
+#   "mistralai/mixtral-8x22b-instruct"    → Mixtral 8x22B
+#
+# Make sure your OpenRouter account has credits: openrouter.ai/credits
+# When USE_PAID_MODEL = True, the paid model is tried FIRST.
+# If it fails (low credits, etc.) it auto-falls back to free models.
+ 
+ 
 
 
 # ── Paths ──────────────────────────────────────────────────────
