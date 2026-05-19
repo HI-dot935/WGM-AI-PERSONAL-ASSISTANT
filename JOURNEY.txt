@@ -3,4 +3,6 @@ Hi I'm HI-dot935
 Summer vacations are boring but not for me I was watching iron man1 some random day then thought why not make smthg like jarvis or friday because I'm a vibe coder musics on 
 basic coding knowledge and my books for data structuring (it's complex in higher level project and I'm a bit bad with data structures), defining structures, basic python .
 
-Took me a while to figure out how will I make it for that I read a few blogs and articles online of ppl who made it then
+Took me a while to figure out how will I make it for that I read a few blogs and articles online of ppl who made something like jarvis or friday  then I made a few notes and
+mappped my plan with what to do features and stuff.
+Then I made some test scripts tested each feature individually on my laptop first then started slowly  merging all of them in single file
