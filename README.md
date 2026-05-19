@@ -1,109 +1,238 @@
----
-title: WGM AI Voice Assistant
-sdk: gradio
-sdk_version: 4.0.0
-app_file: app.py
-pinned: true
-license: mit
-short_description: Cross-platform AI voice assistant — J.A.R.V.I.S style
----
+# WGM — AI Personal Automation Assistant
 
-# W·G·M — AI Voice Assistant
+> A cross-platform AI-powered automation assistant built in Python inspired by J.A.R.V.I.S-style interaction and workflow automation.
 
-> *Cross-platform AI voice assistant. J.A.R.V.I.S-style personality. OpenRouter powered.*
+WGM is designed to help control and interact with your computer using natural commands, voice input, automation tools, and AI models. The project started as an experiment around combining conversational AI with real desktop control and gradually evolved into a larger personal assistant system.
 
----
+Unlike normal chatbot projects, WGM focuses more on:
 
-## What is WGM?
+* desktop interaction,
+* automation,
+* workflow assistance,
+* and practical daily-use tools.
 
-WGM is a fully local, cross-platform AI voice assistant built in Python — runs on **Windows, macOS, and Linux**. Speak naturally and WGM responds with a J.A.R.V.I.S-style personality, powered by OpenRouter's free AI models with automatic fallback.
-
-This HuggingFace Space is a **live web demo** of the conversation engine. The full local version does a lot more (see below).
+The assistant is capable of handling both conversational AI tasks and real operating-system-level actions.
 
 ---
 
-## Full Local Features
+# What WGM Can Do
 
-| Feature | Voice Command Example |
-|---|---|
-| 🤖 AI conversation | *"explain quantum computing"* |
-| 🔍 4-source web search | *"search the web for latest AI news"* |
-| 📂 File search by voice | *"find my resume"*, *"find all pdf files"* |
-| 🌐 Web app launcher | *"open google docs"*, *"launch figma"* |
-| 🔗 200+ site launcher | *"open netflix in chrome"* |
-| 📱 App launcher | *"open vscode"*, *"open spotify"* |
-| 🌤️ Weather | *"weather in Mumbai"* |
-| 📰 News | *"latest news on AI"* |
-| 📖 Wikipedia | *"wikipedia about black holes"* |
-| ⏰ Time & Date | *"what time is it"* |
-| 🔊 Volume control | *"volume up"*, *"mute"* |
-| 📸 Screenshot | *"take a screenshot"* |
-| 🎵 Music player | *"play music"* |
-| 📡 WiFi info | *"what network am i on"* |
-| 😄 Jokes | *"tell me a joke"* |
-| 💰 Paid model support | flip `USE_PAID_MODEL = True` |
+## 🤖 AI Conversations
+
+WGM can answer questions, explain concepts, summarize topics, and hold natural conversations using OpenRouter AI models.
+
+Example:
+
+```bash id="0odnyg"
+"Explain black holes"
+"Give me a summary of quantum computing"
+```
 
 ---
 
-## How to Run Locally
+## 🎙️ Voice Command Support
 
-```bash
-# 1. Clone
-git clone https://github.com/YOUR_USERNAME/WGM-Voice-Assistant
-cd WGM-Voice-Assistant
+The assistant supports microphone-based voice interaction for hands-free control.
 
-# 2. Install
+Example:
+
+```bash id="v0pz91"
+"Open Spotify"
+"Search latest AI news"
+"Take screenshot"
+```
+
+---
+
+## 🌐 Web Search + Information
+
+WGM can search the web, fetch information, and provide quick responses from online sources.
+
+Features include:
+
+* AI-assisted web search
+* Weather reports
+* News fetching
+* Wikipedia integration
+
+---
+
+## 📂 File Searching
+
+Search local files directly through commands.
+
+Example:
+
+```bash id="u4ql06"
+"Find all PDF files"
+"Search for my resume"
+```
+
+---
+
+## 💻 App + Website Launcher
+
+Launch installed applications or websites quickly using commands.
+
+Supported examples:
+
+* VS Code
+* Spotify
+* Chrome
+* YouTube
+* GitHub
+* Netflix
+* Figma
+* and many more
+
+---
+
+## 🔊 System Controls
+
+WGM can interact with basic system functionality like:
+
+* volume controls,
+* screenshots,
+* app launching,
+* time/date access,
+* and desktop automation tasks.
+
+---
+
+# AI Models Used
+
+WGM uses OpenRouter for accessing multiple AI models with automatic fallback support.
+
+The assistant tries models in sequence if one fails or becomes unavailable.
+
+## Current Model Pipeline
+
+```python id="90rfhl"
+1. qwen/qwen3-8b:free
+2. meta-llama/llama-3.3-70b-instruct:free
+3. google/gemma-3-27b-it:free
+4. mistralai/mistral-7b-instruct:free
+5. openrouter/auto
+```
+
+---
+
+# Model Overview
+
+| Model           | Purpose                                             |
+| --------------- | --------------------------------------------------- |
+| Qwen 3 8B       | Primary fast-response conversational model          |
+| Llama 3.3 70B   | Larger reasoning and instruction-following fallback |
+| Gemma 3 27B     | Alternative balanced conversational model           |
+| Mistral 7B      | Lightweight backup model                            |
+| OpenRouter Auto | Final automatic routing fallback                    |
+
+The fallback system helps keep the assistant functional even if specific providers are temporarily unavailable.
+
+---
+
+# Performance Notes
+
+Performance depends heavily on:
+
+* internet speed,
+* API response times,
+* and hardware capabilities.
+
+The assistant was tested mainly on older hardware during development, so some larger AI responses may take longer depending on the selected model.
+
+Voice recognition and automation speed can also vary across operating systems.
+
+---
+
+# Platforms Supported
+
+| Platform | Support |
+| -------- | ------- |
+| macOS    | ✅       |
+| Windows  | ✅       |
+| Linux    | ✅       |
+
+---
+
+# Technologies Used
+
+Main technologies used in the project:
+
+* Python
+* OpenRouter API
+* Gradio
+* SpeechRecognition
+* pyttsx3
+* PyAutoGUI
+* Requests
+* Wikipedia API
+
+---
+
+# How to Run WGM Locally
+
+## 1️⃣ Clone the Repository
+
+```bash id="vwjlwm"
+git clone https://github.com/Hi-dot935/WGM-AI-PERSONAL-ASSISTANT.git
+cd WGM-AI-PERSONAL-ASSISTANT
+```
+
+---
+
+## 2️⃣ Install Dependencies
+
+```bash id="yftm4u"
 pip install -r requirements.txt
+```
 
-# 3. Add your OpenRouter key (free at openrouter.ai)
-#    Open WGM-ALL-DEVICES.py and paste key on line ~121
+---
 
-# 4. Run
+## 3️⃣ Add OpenRouter API Key
+
+Get a free API key from:
+
+[OpenRouter](https://openrouter.ai?utm_source=chatgpt.com)
+
+Then add your API key inside the Python configuration section:
+
+```python id="58r33e"
+OPENROUTER_API_KEY = "your-api-key"
+```
+
+---
+
+## 4️⃣ Run the Assistant
+
+```bash id="vbxuvv"
 python WGM-ALL-DEVICES.py
+```
 
-# Quick test (no mic needed)
+---
+
+# Example Commands
+
+```bash id="2z0y1k"
+python WGM-ALL-DEVICES.py "open youtube"
+python WGM-ALL-DEVICES.py "weather in Pune"
+python WGM-ALL-DEVICES.py "find all pdf files"
+python WGM-ALL-DEVICES.py "latest AI news"
 python WGM-ALL-DEVICES.py "what time is it"
-python WGM-ALL-DEVICES.py "give me a report on India GDP"
 ```
 
 ---
 
-## AI Models Used (Free)
+# Project Status
 
-WGM auto-tries these in order — falls back if one is down:
+WGM is still actively evolving and being improved over time.
 
-1. `qwen/qwen3-8b:free` — primary
-2. `meta-llama/llama-3.3-70b-instruct:free` — fallback 1
-3. `google/gemma-3-27b-it:free` — fallback 2
-4. `mistralai/mistral-7b-instruct:free` — fallback 3
-5. `openrouter/auto` — last resort
+Current focus areas include:
 
-Paid models supported too — set `USE_PAID_MODEL = True` and pick any model from [openrouter.ai/models](https://openrouter.ai/models).
+* smarter automation,
+* cleaner architecture,
+* local AI integration,
+* memory/context improvements,
+* and more reliable cross-platform support.
 
----
-
-## Requirements (Local)
-
-```
-pyautogui~=0.9.54
-SpeechRecognition~=3.10.4
-requests~=2.31.0
-wikipedia~=1.4.0
-pyjokes==0.6.0
-pyttsx3~=2.90
-pyaudio~=0.2.14
-```
-
----
-
-## Platform Support
-
-| Platform | TTS | Volume | Screenshots | Apps |
-|---|---|---|---|---|
-| macOS 10.15+ | `say` command | osascript | screencapture | `open -a` |
-| Windows 10/11 | pyttsx3 SAPI5 | pycaw/ctypes | pyautogui | os.startfile |
-| Linux Ubuntu 20+ | pyttsx3 espeak | amixer | scrot | xdg-open |
-
----
-
-*Built with Python · OpenRouter · DuckDuckGo · Wikipedia · Gradio*
+The project is primarily experimental and focused on learning, automation, and AI integration workflows.
