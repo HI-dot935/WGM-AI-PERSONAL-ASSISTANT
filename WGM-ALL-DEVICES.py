@@ -2,13 +2,13 @@
 
 ╔══════════════════════════════════════════════════════════════╗
 
-║   W G M  —  AI Voice Assistant  v4.0  (Cross-Platform)      ║
+║  W G M  —  AI Voice Assistant  v5.0  (Cross-Platform)       ║
 
-║   Windows 10/11 · macOS 10.15+ · Linux (Ubuntu 20+)         ║
+║   Windows 10/11 · macOS 10.15+ · Linux (Ubuntu 20+)          ║
 
-║   Python 3.9+                                                ║
+║   Works on Python 3.9+                                       ║
 
-║   Powered by OpenRouter · DuckDuckGo · Wikipedia             ║
+║   Uses OpenRouter · DuckDuckGo · Wikipedia · Google          ║
 
 ╚══════════════════════════════════════════════════════════════╝
 
@@ -44,13 +44,11 @@ PLATFORM NOTES:
 
             screencapture screenshots, airport wifi, open -a app launch
 
-  Linux   : pyttsx3 (espeak), amixer volume,
+ Linux   : pyttsx3 (espeak), amixer volume,
 
             scrot screenshots, iwgetid wifi, xdg-open app launch
 
 """
-
-
 
 import datetime
 
@@ -70,8 +68,6 @@ from html.parser import HTMLParser
 
 from urllib.parse import quote_plus
 
-
-
 import pyjokes
 
 import requests
@@ -85,9 +81,9 @@ import types as _types
 
 for _mod_name in ("aifc", "audioop", "sunau", "chunk"):
     try:
-        __import__(_mod_name)          # already exists — do nothing
+        __import__(_mod_name)  # already exists — do nothing
     except ImportError:
-        _sys.modules[_mod_name] = _types.ModuleType(_mod_name)   # stub it
+        _sys.modules[_mod_name] = _types.ModuleType(_mod_name)  # stub it
 # ──────────────────────────────────────────────────────────────────────────────
 
 import speech_recognition as sr
@@ -96,17 +92,15 @@ import wikipedia
 
 import platform
 
-
 try:
     import pyttsx3
+
     _PYTTSX3_AVAILABLE = True
 except ImportError:
     _PYTTSX3_AVAILABLE = False
 
 # Detect OS once at startup
-OS = platform.system()   # "Windows", "Darwin" (macOS), "Linux"
-
-
+OS = platform.system()  # "Windows", "Darwin" (macOS), "Linux"
 
 # ══════════════════════════════════════════════════════════════
 
@@ -115,20 +109,15 @@ OS = platform.system()   # "Windows", "Darwin" (macOS), "Linux"
 # ══════════════════════════════════════════════════════════════
 
 
-
 # Paste your free OpenRouter key here → openrouter.ai → Keys → Create Key
 
 OPENROUTER_API_KEY = "your api key"
-
-
 
 # Optional: free weather key from openweathermap.org
 
 WEATHER_API_KEY = ""
 
-DEFAULT_CITY    = "(set it)"
-
-
+DEFAULT_CITY = "(set it)"
 
 # ── Voice ──────────────────────────────────────────────────────
 
@@ -144,27 +133,24 @@ DEFAULT_CITY    = "(set it)"
 
 #   Fred    → robotic, retro
 
-VOICE_NAME  = "Samantha"  # Female US voice — change with `say -v ?` (try: Ava, Victoria, Kate)
+VOICE_NAME = "Ava"  # Female US voice — change with `say -v ?` (try: Ava, Victoria, Kate)
 
-VOICE_RATE  = 178         # words per minute  (160 = measured, 190 = brisk)
-
-
+VOICE_RATE = 178  # words per minute  (160 = measured, 190 = brisk)
 
 # ── AI model ───────────────────────────────────────────────────
 
-OPENROUTER_URL    = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Tried in order — auto-falls back if one is rate-limited or down
+# Tried in order — auto-falls back if anyone is rate limited or the model is down
 OPENROUTER_MODELS = [
-    "qwen/qwen3-8b:free",
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "google/gemma-3-27b-it:free",
-    "mistralai/mistral-7b-instruct:free",
-    "openrouter/auto",
+    "qwen/qwen3-8b:free",  # primary
+    "meta-llama/llama-3.3-70b-instruct:free",  # fallback 1
+    "google/gemma-3-27b-it:free",  # fallback 2
+    "mistralai/mistral-7b-instruct:free",  # fallback 3
+    "openrouter/auto",  # last resort — OpenRouter picks anything available
 ]
-
-# ══════════════════════════════════════════════════════════════════
 USE_PAID_MODEL = False  # ← flip to True to use a paid model
+OPENROUTER_MODEL = OPENROUTER_MODELS[0]  # tracks which model is currently active
 PREFERRED_PAID_MODEL = "openai/gpt-4o-mini"  # ← paste your chosen model string here
 
 # Popular paid model strings from openrouter.ai/models :
@@ -178,28 +164,25 @@ PREFERRED_PAID_MODEL = "openai/gpt-4o-mini"  # ← paste your chosen model strin
 #
 # Make sure your OpenRouter account has credits: openrouter.ai/credits
 # When USE_PAID_MODEL = True, the paid model is tried FIRST.
-# If it fails (due to some reasons of token credits or default ) it auto-falls back to free models.
-
+# If it fails (low credits, etc.) it auto-falls back to free models.
 
 
 # ── Paths ──────────────────────────────────────────────────────
 
-NAME_FILE      = os.path.expanduser("~/.wgm_name")
+NAME_FILE = os.path.expanduser("~/.wgm_name")
 
 if OS == "Windows":
-    MUSIC_DIR      = os.path.join(os.path.expanduser("~"), "Music")
+    MUSIC_DIR = os.path.join(os.path.expanduser("~"), "Music")
     SCREENSHOT_DIR = os.path.join(os.path.expanduser("~"), "Desktop")
-    CHROME_APP     = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+    CHROME_APP = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 elif OS == "Darwin":
-    MUSIC_DIR      = os.path.expanduser("~/Music")
+    MUSIC_DIR = os.path.expanduser("~/Music")
     SCREENSHOT_DIR = os.path.expanduser("~/Desktop")
-    CHROME_APP     = "/Applications/Google Chrome.app"
+    CHROME_APP = "/Applications/Google Chrome.app"
 else:  # Linux
-    MUSIC_DIR      = os.path.expanduser("~/Music")
+    MUSIC_DIR = os.path.expanduser("~/Music")
     SCREENSHOT_DIR = os.path.expanduser("~/Desktop")
-    CHROME_APP     = "/usr/bin/google-chrome"
-
-
+    CHROME_APP = "/usr/bin/google-chrome"
 
 # ══════════════════════════════════════════════════════════════
 
@@ -247,13 +230,13 @@ SYSTEM_PROMPT = (
 
     "── PERSONALITY ──\n"
 
-    "Rule 7: For casual talk — be warm, natural, a little flirty. "
+    "Rule 7: For casual talk — be warm, natural, a little funnny, be kind gentle, a little humour is allowed. "
 
     "Use phrases like Oh totally, Yeah for sure, honestly, haha, no worries, right. "
 
     "Sound like a smart friend, not a robot reading a manual.\n"
 
-    "Rule 8: Think like GPT — understand intent, not just literal words.\n"
+    "Rule 8: Think like GPT — understand intent and meaning, not just literal words.\n"
 
     "Rule 9: Be confident, helpful, knowledgeable, and personable.\n\n"
 
@@ -285,7 +268,7 @@ SYSTEM_PROMPT = (
 
 
 
-    "Rule 10: You run inside a Python app on the users Mac. "
+    "Rule 10: You run inside a Python app on the user's device (Mac, Windows, or Linux). "
 
     "The app handles time, date, wifi, screenshots, volume natively. "
 
@@ -293,13 +276,9 @@ SYSTEM_PROMPT = (
 
 )
 
-
-
 # Conversation memory within a session
 
 _history = []
-
-
 
 # ══════════════════════════════════════════════════════════════
 #  LOCAL INSTANT CACHE — zero API latency for common phrases
@@ -890,7 +869,6 @@ def _instant_reply(query: str):
     return None
 
 
-
 # ── Detail-mode detector ─────────────────────────────────────
 
 _DETAIL_TRIGGERS = (
@@ -926,17 +904,12 @@ _DETAIL_TRIGGERS = (
 )
 
 
-
 def _is_detail_mode(query: str) -> bool:
-
     """Return True if the query wants a long detailed response."""
 
     q = query.lower()
 
     return any(t in q for t in _DETAIL_TRIGGERS)
-
-
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -946,39 +919,32 @@ def _is_detail_mode(query: str) -> bool:
 # ══════════════════════════════════════════════════════════════
 
 
-
 def _clean_for_speech(text: str) -> str:
-
     """Strip markdown and symbols that sound bad when read aloud."""
 
-    text = re.sub(r"```[\s\S]*?```", "", text)          # code blocks
+    text = re.sub(r"```[\s\S]*?```", "", text)  # code blocks
 
-    text = re.sub(r"`[^`]*`", "", text)                  # inline code
+    text = re.sub(r"`[^`]*`", "", text)  # inline code
 
-    text = re.sub(r"\*\*?(.*?)\*\*?", r"\1", text)      # bold / italic
+    text = re.sub(r"\*\*?(.*?)\*\*?", r"\1", text)  # bold / italic
 
-    text = re.sub(r"#{1,6}\s*", "", text)                # headers
+    text = re.sub(r"#{1,6}\s*", "", text)  # headers
 
     text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)  # links
 
-    text = re.sub(r"[>|_~]", "", text)                   # misc symbols
+    text = re.sub(r"[>|_~]", "", text)  # misc symbols
 
     text = re.sub(r"\s+", " ", text).strip()
 
     return text
 
 
-
-
-
 def speak(text: str, rate: int = None):
-
     """Speak text aloud — macOS uses `say`, Windows/Linux use pyttsx3."""
 
     clean = _clean_for_speech(str(text))
 
     if not clean:
-
         return
 
     print(f"\n  ◆ WGM: {clean}\n")
@@ -1034,7 +1000,6 @@ def speak(text: str, rate: int = None):
             try:
 
                 if rate:
-
                     _tts_engine.setProperty("rate", rate)
 
                 _tts_engine.say(clean)
@@ -1053,21 +1018,13 @@ def speak(text: str, rate: int = None):
 _tts_engine = None  # lazy-init for Windows/Linux pyttsx3
 
 
-
-
-
 def speak_slow(text: str):
-
     """Slightly slower for greetings / important messages."""
 
     speak(text, rate=162)
 
 
-
-
-
 def _filler():
-
     """Short spoken filler while processing — sounds natural."""
 
     fillers = [
@@ -1091,9 +1048,6 @@ def _filler():
     speak(random.choice(fillers))
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ④ SPEECH INPUT — microphone listening
@@ -1101,24 +1055,20 @@ def _filler():
 # ══════════════════════════════════════════════════════════════
 
 
-
 def takecommand() -> str:
-
     """Listen via microphone and return recognised text (lowercase), or None."""
 
     r = sr.Recognizer()
 
-    r.energy_threshold         = 250
+    r.energy_threshold = 250
 
     r.dynamic_energy_threshold = True
 
-    r.pause_threshold          = 0.85
+    r.pause_threshold = 0.85
 
-    r.phrase_threshold         = 0.1
+    r.phrase_threshold = 0.1
 
-    r.non_speaking_duration    = 0.5
-
-
+    r.non_speaking_duration = 0.5
 
     try:
 
@@ -1152,8 +1102,6 @@ def takecommand() -> str:
 
         return None
 
-
-
     try:
 
         print("  Recognising...")
@@ -1166,7 +1114,7 @@ def takecommand() -> str:
 
     except sr.UnknownValueError:
 
-        return None       # silent miss — don't speak on every background noise
+        return None  # silent miss — don't speak on every background noise
 
     except sr.RequestError:
 
@@ -1181,9 +1129,6 @@ def takecommand() -> str:
         return None
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑤ NAME — load / save assistant name
@@ -1191,9 +1136,7 @@ def takecommand() -> str:
 # ══════════════════════════════════════════════════════════════
 
 
-
 def load_name() -> str:
-
     try:
 
         with open(NAME_FILE) as f:
@@ -1207,11 +1150,7 @@ def load_name() -> str:
         return "W.G.M."
 
 
-
-
-
 def set_name():
-
     speak("What would you like to call me?")
 
     name = takecommand()
@@ -1229,9 +1168,6 @@ def set_name():
         speak("I didn't catch that. Name remains unchanged.")
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑥ GREETING
@@ -1239,22 +1175,22 @@ def set_name():
 # ══════════════════════════════════════════════════════════════
 
 
-
 def wishme():
-
     name = load_name()
 
     hour = datetime.datetime.now().hour
 
-    if   4  <= hour < 12: period = "Good morning"
+    if 4 <= hour < 12:
+        period = "Good morning"
 
-    elif 12 <= hour < 17: period = "Good afternoon"
+    elif 12 <= hour < 17:
+        period = "Good afternoon"
 
-    elif 17 <= hour < 21: period = "Good evening"
+    elif 17 <= hour < 21:
+        period = "Good evening"
 
-    else:                  period = "Good night"
-
-
+    else:
+        period = "Good night"
 
     greets = [
 
@@ -1266,16 +1202,13 @@ def wishme():
 
         f"{period}. {name} is up and running. What can I do for you today, sir?",
 
-        f"{period}. {name} is  online  and running. What is your mood today sir?",      
+        f"{period}. {name} is  online  and running. What is your mood today sir?",
 
     ]
 
     speak_slow(random.choice(greets))
 
     print("\n  Tip: say 'help' to hear everything I can do.\n")
-
-
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1285,37 +1218,24 @@ def wishme():
 # ══════════════════════════════════════════════════════════════
 
 
-
 def tell_time():
-
     t = datetime.datetime.now().strftime("%I:%M %p").lstrip("0")
 
     speak(f"The time is {t}.")
 
 
-
-
-
 def tell_date():
-
     now = datetime.datetime.now()
 
     speak(f"Today is {now.strftime('%A, %B %d, %Y')}.")
 
 
-
-
-
 def tell_datetime():
-
     now = datetime.datetime.now()
 
-    t   = now.strftime("%I:%M %p").lstrip("0")
+    t = now.strftime("%I:%M %p").lstrip("0")
 
     speak(f"It is {now.strftime('%A, %B %d')} and the time is {t}.")
-
-
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1323,7 +1243,6 @@ def tell_datetime():
 #  ⑧ WEB SEARCH — DuckDuckGo instant + Google scrape fallback
 
 # ══════════════════════════════════════════════════════════════
-
 
 
 class _HTMLStripper(HTMLParser):
@@ -1334,25 +1253,17 @@ class _HTMLStripper(HTMLParser):
 
         self.chunks = []
 
-        self._skip  = False
-
-
+        self._skip = False
 
     def handle_starttag(self, tag, attrs):
 
         if tag in ("script", "style", "nav", "header", "footer", "noscript"):
-
             self._skip = True
-
-
 
     def handle_endtag(self, tag):
 
         if tag in ("script", "style", "nav", "header", "footer", "noscript"):
-
             self._skip = False
-
-
 
     def handle_data(self, data):
 
@@ -1361,21 +1272,14 @@ class _HTMLStripper(HTMLParser):
             t = data.strip()
 
             if t:
-
                 self.chunks.append(t)
-
-
 
     def text(self):
 
         return " ".join(self.chunks)
 
 
-
-
-
 def _ddg_instant(query: str) -> str:
-
     """DuckDuckGo Instant Answer API — returns answer text or empty string."""
 
     try:
@@ -1398,19 +1302,16 @@ def _ddg_instant(query: str) -> str:
 
         answer = (
 
-            d.get("AbstractText") or
+                d.get("AbstractText") or
 
-            d.get("Answer")       or
+                d.get("Answer") or
 
-            d.get("Definition")   or ""
+                d.get("Definition") or ""
 
         )
 
         if answer and len(answer) > 30:
-
             return answer
-
-
 
         # Check related topics
 
@@ -1421,7 +1322,6 @@ def _ddg_instant(query: str) -> str:
                 t = topic.get("Text", "")
 
                 if t and len(t) > 40:
-
                     return t
 
     except Exception:
@@ -1431,11 +1331,7 @@ def _ddg_instant(query: str) -> str:
     return ""
 
 
-
-
-
 def _google_snippet(query: str) -> str:
-
     """Scrape a short snippet from Google search results (no key needed)."""
 
     try:
@@ -1466,8 +1362,6 @@ def _google_snippet(query: str) -> str:
 
         html = resp.text
 
-
-
         # Featured snippet patterns
 
         patterns = [
@@ -1489,7 +1383,6 @@ def _google_snippet(query: str) -> str:
                 clean = re.sub(r"\s+", " ", clean)
 
                 if len(clean) > 60:
-
                     return clean[:600]
 
     except Exception:
@@ -1499,11 +1392,7 @@ def _google_snippet(query: str) -> str:
     return ""
 
 
-
-
-
 def web_search(query: str, open_browser_fallback: bool = True):
-
     """
 
     Smart search pipeline:
@@ -1518,50 +1407,34 @@ def web_search(query: str, open_browser_fallback: bool = True):
 
     _filler()
 
-
-
     answer = _ddg_instant(query)
 
     if answer:
-
         speak(answer[:520])
 
         print(f"\n  [Source: DuckDuckGo]\n  {answer[:250]}...\n")
 
         return
 
-
-
     answer = _google_snippet(query)
 
     if answer:
-
         speak(answer[:520])
 
         print(f"\n  [Source: Google snippet]\n  {answer[:250]}...\n")
 
         return
 
-
-
     if open_browser_fallback:
-
         speak(f"I couldn't find a quick answer. Opening Google for '{query}'.")
 
         wb.open(f"https://www.google.com/search?q={quote_plus(query)}")
 
 
-
-
-
 def _fetch_context(query: str) -> str:
-
     """Return a short web snippet to give the AI factual context."""
 
     return _ddg_instant(query) or _google_snippet(query) or ""
-
-
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1571,16 +1444,14 @@ def _fetch_context(query: str) -> str:
 # ══════════════════════════════════════════════════════════════
 
 
-
 def search_wikipedia(query: str):
-
     try:
 
         _filler()
 
         result = wikipedia.summary(query, sentences=4, auto_suggest=True)
 
-        result = re.sub(r"\([^)]{0,80}\)", "", result)   # strip parenthetical refs
+        result = re.sub(r"\([^)]{0,80}\)", "", result)  # strip parenthetical refs
 
         result = re.sub(r"\s+", " ", result).strip()
 
@@ -1605,9 +1476,6 @@ def search_wikipedia(query: str):
         web_search(query)
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑩ WEATHER
@@ -1615,14 +1483,10 @@ def search_wikipedia(query: str):
 # ══════════════════════════════════════════════════════════════
 
 
-
 def get_weather(city: str = None):
-
     city = (city or DEFAULT_CITY).strip().title()
 
     _filler()
-
-
 
     if WEATHER_API_KEY:
 
@@ -1641,16 +1505,15 @@ def get_weather(city: str = None):
             d = resp.json()
 
             if resp.status_code == 200:
+                desc = d["weather"][0]["description"]
 
-                desc  = d["weather"][0]["description"]
-
-                temp  = d["main"]["temp"]
+                temp = d["main"]["temp"]
 
                 feels = d["main"]["feels_like"]
 
                 humid = d["main"]["humidity"]
 
-                wind  = d["wind"]["speed"]
+                wind = d["wind"]["speed"]
 
                 speak(
 
@@ -1668,8 +1531,6 @@ def get_weather(city: str = None):
 
             pass
 
-
-
     # No key — try DuckDuckGo, then open browser
 
     answer = _ddg_instant(f"weather in {city} today")
@@ -1685,9 +1546,6 @@ def get_weather(city: str = None):
         wb.open(f"https://www.google.com/search?q=weather+in+{quote_plus(city)}")
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑪ NEWS
@@ -1695,9 +1553,7 @@ def get_weather(city: str = None):
 # ══════════════════════════════════════════════════════════════
 
 
-
 def get_news(topic: str = ""):
-
     if topic:
 
         speak(f"Opening the latest news about {topic}.")
@@ -1711,9 +1567,6 @@ def get_news(topic: str = ""):
         wb.open("https://news.google.com/?hl=en-IN&gl=IN")
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑫ WIFI
@@ -1721,10 +1574,7 @@ def get_news(topic: str = ""):
 # ══════════════════════════════════════════════════════════════
 
 
-
-
 def get_wifi():
-
     try:
 
         if OS == "Darwin":
@@ -1746,7 +1596,6 @@ def get_wifi():
             for line in out.splitlines():
 
                 if "SSID" in line and "BSSID" not in line:
-
                     ssid = line.split(":", 1)[1].strip()
 
                     speak(f"You are connected to the {ssid} network.")
@@ -1766,7 +1615,6 @@ def get_wifi():
             for line in out.splitlines():
 
                 if "SSID" in line and "BSSID" not in line:
-
                     ssid = line.split(":", 1)[1].strip()
 
                     speak(f"You are connected to the {ssid} network.")
@@ -1782,7 +1630,6 @@ def get_wifi():
             ).stdout.strip()
 
             if out:
-
                 speak(f"You are connected to the {out} network.")
 
                 return
@@ -1794,9 +1641,6 @@ def get_wifi():
         speak("Network status is unavailable.")
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑬ APP & WEBSITE LAUNCHER
@@ -1804,218 +1648,462 @@ def get_wifi():
 # ══════════════════════════════════════════════════════════════
 
 
-
 MAC_APPS = {
 
-    # Browsers
+    # Creative / Recording
 
-    "safari":                "Safari",
+    "garageband": "GarageBand",
 
-    "chrome":                "Google Chrome",
+    "garage band": "GarageBand",
 
-    "google chrome":         "Google Chrome",
+    "imovie": "iMovie",
 
-    "firefox":               "Firefox",
+    "i movie": "iMovie",
 
-    "brave":                 "Brave Browser",
+    "logic pro": "Logic Pro",
 
-    "arc":                   "Arc",
+    "logicpro": "Logic Pro",
 
-    "opera":                 "Opera",
+    "final cut": "Final Cut Pro",
+
+    "davinci resolve": "DaVinci Resolve",
+
+    "davinci": "DaVinci Resolve",
+
+    "audacity": "Audacity",
+
+    "handbrake": "HandBrake",
+
+    # Utilities
+
+    "alfred": "Alfred",
+
+    "raycast": "Raycast",
+
+    "bartender": "Bartender 4",
+
+    "cleanmymac": "CleanMyMac X",
+
+    "amphetamine": "Amphetamine",
+
+    "magnet": "Magnet",
+
+    "rectangle": "Rectangle",
+
+    "paste": "Paste",
+
+    "dropzone": "Dropzone 4",
+
+    "istatmenus": "iStatMenus",
+
+    "1password": "1Password 7",
+
+    "bitwarden": "Bitwarden",
+
+    "protonvpn": "ProtonVPN",
+
+    "nordvpn": "NordVPN",
+
+    "tunnelbear": "TunnelBear",
+
+    "little snitch": "Little Snitch",
+
+    # Dev extras
+
+    "tableplus": "TablePlus",
+
+    "sequel pro": "Sequel Pro",
+
+    "proxyman": "Proxyman",
+
+    "insomnia": "Insomnia",
+
+    "fork": "Fork",
+
+    "tower": "Tower",
+
+    "working copy": "Working Copy",
+
+    "transmit": "Transmit 5",
+
+    "cyberduck": "Cyberduck",
+
+    "filezilla": "FileZilla",
+
+    "docker": "Docker",
+
+    "sublime": "Sublime Text",
+
+    "sublime text": "Sublime Text",
+
+    "atom": "Atom",
+
+    "nova": "Nova",
+
+    "cursor": "Cursor",
+
+    # Office extras
+
+    "onenote": "Microsoft OneNote",
+
+    "one note": "Microsoft OneNote",
+
+    "todo": "Microsoft To Do",
+
+    "bear": "Bear",
+
+    "craft": "Craft",
+
+    "ulysses": "Ulysses",
+
+    "ia writer": "iA Writer",
+
+    "typora": "Typora",
+
+    "goodlinks": "GoodLinks",
+
+    "reeder": "Reeder 5",
+
+    "netnewswire": "NetNewsWire",
+
+    # Communication extras
+
+    "beeper": "Beeper",
+
+    "caprine": "Caprine",
+
+    "ferdi": "Ferdi",
+
+    "airmail": "Airmail 5",
+
+    "spark": "Spark",
+
+    "mimestream": "Mimestream",
+
+    "safari": "Safari",
+
+    "chrome": "Google Chrome",
+
+    "google chrome": "Google Chrome",
+
+    "firefox": "Firefox",
+
+    "brave": "Brave Browser",
+
+    "arc": "Arc",
+
+    "opera": "Opera",
 
     # Development
 
-    "terminal":              "Terminal",
+    "terminal": "Terminal",
 
-    "iterm":                 "iTerm",
+    "iterm": "iTerm",
 
-    "vscode":                "Visual Studio Code",
+    "vscode": "Visual Studio Code",
 
-    "visual studio code":    "Visual Studio Code",
+    "visual studio code": "Visual Studio Code",
 
-    "vs code":               "Visual Studio Code",
+    "vs code": "Visual Studio Code",
 
-    "code":                  "Visual Studio Code",
+    "code": "Visual Studio Code",
 
-    "xcode":                 "Xcode",
+    "xcode": "Xcode",
 
-    "pycharm":               "PyCharm",
+    "pycharm": "PyCharm",
 
-    "android studio":        "Android Studio",
+    "android studio": "Android Studio",
 
-    "postman":               "Postman",
+    "postman": "Postman",
 
-    "sourcetree":            "Sourcetree",
+    "sourcetree": "Sourcetree",
 
     # Productivity
 
-    "finder":                "Finder",
+    "finder": "Finder",
 
-    "notes":                 "Notes",
+    "notes": "Notes",
 
-    "calendar":              "Calendar",
+    "calendar": "Calendar",
 
-    "reminders":             "Reminders",
+    "reminders": "Reminders",
 
-    "mail":                  "Mail",
+    "mail": "Mail",
 
-    "messages":              "Messages",
+    "messages": "Messages",
 
-    "facetime":              "FaceTime",
+    "facetime": "FaceTime",
 
-    "maps":                  "Maps",
+    "maps": "Maps",
 
-    "calculator":            "Calculator",
+    "calculator": "Calculator",
 
-    "textedit":              "TextEdit",
+    "textedit": "TextEdit",
 
-    "preview":               "Preview",
+    "preview": "Preview",
 
-    "pages":                 "Pages",
+    "pages": "Pages",
 
-    "numbers":               "Numbers",
+    "numbers": "Numbers",
 
-    "keynote":               "Keynote",
+    "keynote": "Keynote",
 
-    "word":                  "Microsoft Word",
+    "word": "Microsoft Word",
 
-    "excel":                 "Microsoft Excel",
+    "excel": "Microsoft Excel",
 
-    "powerpoint":            "Microsoft PowerPoint",
+    "powerpoint": "Microsoft PowerPoint",
 
-    "outlook":               "Microsoft Outlook",
+    "outlook": "Microsoft Outlook",
 
-    "notion":                "Notion",
+    "notion": "Notion",
 
-    "obsidian":              "Obsidian",
+    "obsidian": "Obsidian",
 
     # Media & Design
 
-    "spotify":               "Spotify",
+    "spotify": "Spotify",
 
-    "music":                 "Music",
+    "music": "Music",
 
-    "podcasts":              "Podcasts",
+    "podcasts": "Podcasts",
 
-    "photos":                "Photos",
+    "photos": "Photos",
 
-    "quicktime":             "QuickTime Player",
+    "quicktime": "QuickTime Player",
 
-    "vlc":                   "VLC",
+    "vlc": "VLC",
 
-    "figma":                 "Figma",
+    "figma": "Figma",
 
-    "sketch":                "Sketch",
+    "sketch": "Sketch",
 
-    "photoshop":             "Adobe Photoshop",
+    "photoshop": "Adobe Photoshop",
 
-    "illustrator":           "Adobe Illustrator",
+    "illustrator": "Adobe Illustrator",
 
-    "premiere":              "Adobe Premiere Pro",
+    "premiere": "Adobe Premiere Pro",
 
     # Communication
 
-    "slack":                 "Slack",
+    "slack": "Slack",
 
-    "zoom":                  "zoom.us",
+    "zoom": "zoom.us",
 
-    "teams":                 "Microsoft Teams",
+    "teams": "Microsoft Teams",
 
-    "discord":               "Discord",
+    "discord": "Discord",
 
-    "whatsapp":              "WhatsApp",
+    "whatsapp": "WhatsApp",
 
-    "telegram":              "Telegram",
+    "telegram": "Telegram",
 
-    "skype":                 "Skype",
+    "skype": "Skype",
 
-    "signal":                "Signal",
+    "signal": "Signal",
 
     # System
 
-    "activity monitor":      "Activity Monitor",
+    "activity monitor": "Activity Monitor",
 
-    "system preferences":    "System Preferences",
+    "system preferences": "System Preferences",
 
-    "disk utility":          "Disk Utility",
+    "disk utility": "Disk Utility",
 
-    "app store":             "App Store",
+    "app store": "App Store",
 
-    "automator":             "Automator",
+    "automator": "Automator",
 
 }
-
-
 
 WEBSITES = {
 
-    "youtube":          "https://youtube.com",
+    # GOOGLE SITES
 
-    "google":           "https://google.com",
+    "jio cinema": "https://jiocinema.com",
 
-    "github":           "https://github.com",
+    "jiocinema": "https://jiocinema.com",
 
-    "instagram":        "https://instagram.com",
+    "mxplayer": "https://mxplayer.in",
 
-    "twitter":          "https://twitter.com",
+    "mx player": "https://mxplayer.in",
 
-    "x":                "https://x.com",
+    "swiggy": "https://swiggy.com",
 
-    "facebook":         "https://facebook.com",
+    "zomato": "https://zomato.com",
 
-    "linkedin":         "https://linkedin.com",
+    "bigbasket": "https://bigbasket.com",
 
-    "reddit":           "https://reddit.com",
+    "zepto": "https://zeptonow.com",
 
-    "netflix":          "https://netflix.com",
+    "blinkit": "https://blinkit.com",
 
-    "prime video":      "https://primevideo.com",
+    # NEWS
 
-    "hotstar":          "https://hotstar.com",
+    "ndtv": "https://ndtv.com",
 
-    "amazon":           "https://amazon.in",
+    "timesofindia": "https://timesofindia.indiatimes.com",
 
-    "flipkart":         "https://flipkart.com",
+    "times of india": "https://timesofindia.indiatimes.com",
 
-    "gmail":            "https://mail.google.com",
+    # Tech / Dev
+    "hugging face": "https://huggingface.co",
 
-    "google maps":      "https://maps.google.com",
+    "huggingface": "https://huggingface.co",
 
-    "google drive":     "https://drive.google.com",
+    "leetcode": "https://leetcode.com",
 
-    "google docs":      "https://docs.google.com",
+    "replit": "https://replit.com",
 
-    "google sheets":    "https://sheets.google.com",
+    "vercel": "https://vercel.com",
 
-    "google meet":      "https://meet.google.com",
+    "docker hub": "https://hub.docker.com",
+
+    "npm": "https://npmjs.com",
+
+    "pypi": "https://pypi.org",
+
+    "digitalocean": "https://digitalocean.com",
+
+    # Finance
+
+    "zerodha": "https://zerodha.com",
+
+    "groww": "https://groww.in",
+
+    "binance": "https://binance.com",
+
+    "trading view": "https://tradingview.com",
+
+    "tradingview": "https://tradingview.com",
+
+    # Productivity / Tools
+
+    "figma": "https://figma.com",
+
+    "canva": "https://canva.com",
+
+    "loom": "https://loom.com",
+
+    "google slides": "https://slides.google.com",
+
+    "google forms": "https://forms.google.com",
+
+    "google calendar": "https://calendar.google.com",
+
+    "google keep": "https://keep.google.com",
+
+    "google photos": "https://photos.google.com",
+
+    # AI
+
+    "gemini": "https://gemini.google.com",
+
+    "perplexity": "https://perplexity.ai",
+
+    "mistral": "https://chat.mistral.ai",
+
+    "groq": "https://groq.com",
+
+    "grok": "https://grok.com",
+
+    "poe": "https://poe.com",
+
+    "character ai": "https://character.ai",
+
+    # Social / News
+
+    "threads": "https://threads.net",
+
+    "pinterest": "https://pinterest.com",
+
+    "snapchat": "https://snapchat.com",
+
+    "quora": "https://quora.com",
+
+    "bbc": "https://bbc.com",
+
+    "cnn": "https://cnn.com",
+
+    # Entertainment
+
+    "twitch": "https://twitch.tv",
+
+    "disney plus": "https://disneyplus.com",
+
+    "apple tv": "https://tv.apple.com",
+
+    "plex": "https://app.plex.tv",
+
+    "soundcloud": "https://soundcloud.com",
+
+    "apple music": "https://music.apple.com",
+
+    "youtube": "https://youtube.com",
+
+    "google": "https://google.com",
+
+    "github": "https://github.com",
+
+    "instagram": "https://instagram.com",
+
+    "twitter": "https://twitter.com",
+
+    "x": "https://x.com",
+
+    "facebook": "https://facebook.com",
+
+    "linkedin": "https://linkedin.com",
+
+    "reddit": "https://reddit.com",
+
+    "netflix": "https://netflix.com",
+
+    "prime video": "https://primevideo.com",
+
+    "hotstar": "https://hotstar.com",
+
+    "amazon": "https://amazon.in",
+
+    "flipkart": "https://flipkart.com",
+
+    "gmail": "https://mail.google.com",
+
+    "google maps": "https://maps.google.com",
+
+    "google drive": "https://drive.google.com",
+
+    "google docs": "https://docs.google.com",
+
+    "google sheets": "https://sheets.google.com",
+
+    "google meet": "https://meet.google.com",
 
     "google translate": "https://translate.google.com",
 
-    "chatgpt":          "https://chat.openai.com",
+    "chatgpt": "https://chat.openai.com",
 
-    "openrouter":       "https://openrouter.ai",
+    "openrouter": "https://openrouter.ai",
 
-    "stackoverflow":    "https://stackoverflow.com",
+    "stackoverflow": "https://stackoverflow.com",
 
-    "stack overflow":   "https://stackoverflow.com",
+    "stack overflow": "https://stackoverflow.com",
 
-    "medium":           "https://medium.com",
+    "medium": "https://medium.com",
 
-    "notion":           "https://notion.so",
+    "notion": "https://notion.so",
 
-    "spotify":          "https://open.spotify.com",
+    "spotify": "https://open.spotify.com",
 
-    "whatsapp web":     "https://web.whatsapp.com",
+    "whatsapp web": "https://web.whatsapp.com",
 
-    "duckduckgo":       "https://duckduckgo.com",
+    "duckduckgo": "https://duckduckgo.com",
 
-    "wikipedia":        "https://wikipedia.org",
+    "wikipedia": "https://wikipedia.org",
 
-    "claude":           "https://claude.ai",
+    "claude": "https://claude.ai",
 
 }
-
-
 
 # Words that indicate "open in Chrome specifically"
 
@@ -2026,8 +2114,6 @@ _CHROME_HINTS = (
     "in google chrome", "on google chrome", "through chrome",
 
 )
-
-
 
 # Words that trigger any open action
 
@@ -2040,28 +2126,27 @@ _OPEN_VERBS = (
 )
 
 
-
-
-
 def _open_url(url: str, in_chrome: bool = False):
-
     """Open a URL, optionally forcing Chrome — cross-platform."""
 
     if in_chrome:
 
         if OS == "Darwin" and os.path.exists(CHROME_APP):
 
-            subprocess.Popen(["open", "-a", "Google Chrome", url]); return
+            subprocess.Popen(["open", "-a", "Google Chrome", url]);
+            return
 
         elif OS == "Windows" and os.path.exists(CHROME_APP):
 
-            subprocess.Popen([CHROME_APP, url]); return
+            subprocess.Popen([CHROME_APP, url]);
+            return
 
         elif OS == "Linux":
 
             try:
 
-                subprocess.Popen(["google-chrome", url]); return
+                subprocess.Popen(["google-chrome", url]);
+                return
 
             except FileNotFoundError:
 
@@ -2070,11 +2155,7 @@ def _open_url(url: str, in_chrome: bool = False):
     wb.open(url)
 
 
-
-
-
 def _try_launch_app(name: str) -> bool:
-
     """Try to open an app by name — cross-platform. Returns True on success."""
 
     try:
@@ -2085,11 +2166,13 @@ def _try_launch_app(name: str) -> bool:
 
         elif OS == "Windows":
 
-            subprocess.Popen(["start", "", name], shell=True); return True
+            subprocess.Popen(["start", "", name], shell=True);
+            return True
 
         else:
 
-            subprocess.Popen([name]); return True
+            subprocess.Popen([name]);
+            return True
 
     except Exception:
 
@@ -2129,11 +2212,7 @@ WIN_APPS = {
 }
 
 
-
-
-
 def open_app(query: str, force_chrome: bool = False):
-
     """
 
     Smart opener — handles all of:
@@ -2152,23 +2231,16 @@ def open_app(query: str, force_chrome: bool = False):
 
     q = query.lower().strip()
 
-
-
     # Detect Chrome intent
 
     use_chrome = force_chrome or any(hint in q for hint in _CHROME_HINTS)
-
-
 
     # Strip Chrome modifiers for cleaner matching
 
     q_clean = q
 
     for hint in _CHROME_HINTS:
-
         q_clean = q_clean.replace(hint, "")
-
-
 
     # Strip open verbs
 
@@ -2177,19 +2249,15 @@ def open_app(query: str, force_chrome: bool = False):
     for verb in sorted(_OPEN_VERBS, key=len, reverse=True):
 
         if q_clean.startswith(verb.strip()):
-
             q_clean = q_clean[len(verb.strip()):].strip()
 
             break
-
-
 
     # 1. Check websites dict
 
     for key, url in WEBSITES.items():
 
         if key in q_clean:
-
             chrome_note = " in Chrome" if use_chrome else ""
 
             speak(f"Opening {key}{chrome_note}.")
@@ -2198,8 +2266,6 @@ def open_app(query: str, force_chrome: bool = False):
 
             return
 
-
-
     # 2. Check platform app dict
 
     app_map = MAC_APPS if OS == "Darwin" else WIN_APPS
@@ -2207,19 +2273,15 @@ def open_app(query: str, force_chrome: bool = False):
     for key, app_name in app_map.items():
 
         if key in q_clean:
-
             speak(f"Opening {app_name}.")
 
             _try_launch_app(app_name)
 
             return
 
-
-
     # 3. Looks like a URL?
 
     if "." in q_clean and " " not in q_clean and len(q_clean) > 3:
-
         url = q_clean if q_clean.startswith("http") else f"https://{q_clean}"
 
         speak(f"Opening {q_clean}.")
@@ -2228,8 +2290,6 @@ def open_app(query: str, force_chrome: bool = False):
 
         return
 
-
-
     # 4. Try as raw app name
 
     if q_clean:
@@ -2237,15 +2297,11 @@ def open_app(query: str, force_chrome: bool = False):
         speak(f"Trying to open {q_clean}.")
 
         if not _try_launch_app(q_clean):
-
             speak(f"I could not find {q_clean}. Want me to search for it?")
 
     else:
 
         speak("What would you like me to open?")
-
-
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -2255,15 +2311,10 @@ def open_app(query: str, force_chrome: bool = False):
 # ══════════════════════════════════════════════════════════════
 
 
-
 def search_youtube(query: str):
-
     speak(f"Searching YouTube for {query}.")
 
     wb.open(f"https://www.youtube.com/results?search_query={quote_plus(query)}")
-
-
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -2273,9 +2324,7 @@ def search_youtube(query: str):
 # ══════════════════════════════════════════════════════════════
 
 
-
 def search_in_chrome(query: str):
-
     speak(f"Opening Chrome and searching for {query}.")
 
     url = f"https://www.google.com/search?q={quote_plus(query)}"
@@ -2283,42 +2332,29 @@ def search_in_chrome(query: str):
     _open_url(url, in_chrome=True)
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
-#  ⑯ MUSIC #
+#  ⑯ MUSIC
 
 # ══════════════════════════════════════════════════════════════
-
 
 
 def play_music(song_name: str = ""):
-
     if not os.path.isdir(MUSIC_DIR):
-
         speak("Your Music folder is empty. Opening Spotify.")
 
         subprocess.Popen(["open", "-a", "Spotify"])
 
         return
 
-
-
-    exts  = (".mp3", ".m4a", ".flac", ".wav", ".aiff", ".ogg")
+    exts = (".mp3", ".m4a", ".flac", ".wav", ".aiff", ".ogg")
 
     songs = [f for f in os.listdir(MUSIC_DIR) if f.lower().endswith(exts)]
 
-
-
     if song_name:
-
         matched = [s for s in songs if song_name.lower() in s.lower()]
 
         songs = matched if matched else songs
-
-
 
     if songs:
 
@@ -2347,9 +2383,6 @@ def play_music(song_name: str = ""):
         wb.open("https://open.spotify.com")
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑰ SCREENSHOT
@@ -2357,10 +2390,8 @@ def play_music(song_name: str = ""):
 # ══════════════════════════════════════════════════════════════
 
 
-
 def screenshot():
-
-    ts   = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     path = os.path.join(SCREENSHOT_DIR, f"screenshot_{ts}.png")
 
@@ -2411,9 +2442,6 @@ def screenshot():
         speak("Screenshot failed. Please try again.")
 
 
-
-
-
 # ══════════════════════════════════════════════════════════════
 
 #  ⑱ VOLUME & SYSTEM CONTROLS
@@ -2421,20 +2449,18 @@ def screenshot():
 # ══════════════════════════════════════════════════════════════
 
 
-
 def system_volume(action: str):
-
     replies = {
 
-        "up":     "Volume increased.",
+        "up": "Volume increased.",
 
-        "down":   "Volume decreased.",
+        "down": "Volume decreased.",
 
-        "max":    "Volume at maximum.",
+        "max": "Volume at maximum.",
 
-        "min":    "Volume at minimum.",
+        "min": "Volume at minimum.",
 
-        "mute":   "Muted.",
+        "mute": "Muted.",
 
         "unmute": "Audio restored.",
 
@@ -2446,15 +2472,15 @@ def system_volume(action: str):
 
             scripts = {
 
-                "up":     "set volume output volume (output volume of (get volume settings) + 15)",
+                "up": "set volume output volume (output volume of (get volume settings) + 15)",
 
-                "down":   "set volume output volume (output volume of (get volume settings) - 15)",
+                "down": "set volume output volume (output volume of (get volume settings) - 15)",
 
-                "max":    "set volume output volume 100",
+                "max": "set volume output volume 100",
 
-                "min":    "set volume output volume 5",
+                "min": "set volume output volume 5",
 
-                "mute":   "set volume output muted true",
+                "mute": "set volume output muted true",
 
                 "unmute": "set volume output muted false",
 
@@ -2463,7 +2489,6 @@ def system_volume(action: str):
             script = scripts.get(action)
 
             if script:
-
                 subprocess.run(["osascript", "-e", script])
 
         elif OS == "Windows":
@@ -2476,7 +2501,7 @@ def system_volume(action: str):
 
                 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
-                devices   = AudioUtilities.GetSpeakers()
+                devices = AudioUtilities.GetSpeakers()
 
                 interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
 
@@ -2484,17 +2509,23 @@ def system_volume(action: str):
 
                 cur = vol.GetMasterVolumeLevelScalar()
 
-                if   action == "up":     vol.SetMasterVolumeLevelScalar(min(1.0, cur + 0.15), None)
+                if action == "up":
+                    vol.SetMasterVolumeLevelScalar(min(1.0, cur + 0.15), None)
 
-                elif action == "down":   vol.SetMasterVolumeLevelScalar(max(0.0, cur - 0.15), None)
+                elif action == "down":
+                    vol.SetMasterVolumeLevelScalar(max(0.0, cur - 0.15), None)
 
-                elif action == "max":    vol.SetMasterVolumeLevelScalar(1.0, None)
+                elif action == "max":
+                    vol.SetMasterVolumeLevelScalar(1.0, None)
 
-                elif action == "min":    vol.SetMasterVolumeLevelScalar(0.05, None)
+                elif action == "min":
+                    vol.SetMasterVolumeLevelScalar(0.05, None)
 
-                elif action == "mute":   vol.SetMute(1, None)
+                elif action == "mute":
+                    vol.SetMute(1, None)
 
-                elif action == "unmute": vol.SetMute(0, None)
+                elif action == "unmute":
+                    vol.SetMute(0, None)
 
             except ImportError:
 
@@ -2502,12 +2533,11 @@ def system_volume(action: str):
 
                 keys = {"up": 0xAF, "down": 0xAE, "mute": 0xAD, "unmute": 0xAD}
 
-                key  = keys.get(action)
+                key = keys.get(action)
 
                 if key:
 
                     for _ in range(5 if action in ("up", "down") else 1):
-
                         windll.user32.keybd_event(key, 0, 0, 0)
 
                         windll.user32.keybd_event(key, 0, 2, 0)
@@ -2516,22 +2546,21 @@ def system_volume(action: str):
 
             cmds = {
 
-                "up":     ["amixer", "-D", "pulse", "sset", "Master", "15%+"],
+                "up": ["amixer", "-D", "pulse", "sset", "Master", "15%+"],
 
-                "down":   ["amixer", "-D", "pulse", "sset", "Master", "15%-"],
+                "down": ["amixer", "-D", "pulse", "sset", "Master", "15%-"],
 
-                "max":    ["amixer", "-D", "pulse", "sset", "Master", "100%"],
+                "max": ["amixer", "-D", "pulse", "sset", "Master", "100%"],
 
-                "min":    ["amixer", "-D", "pulse", "sset", "Master", "5%"],
+                "min": ["amixer", "-D", "pulse", "sset", "Master", "5%"],
 
-                "mute":   ["amixer", "-D", "pulse", "sset", "Master", "mute"],
+                "mute": ["amixer", "-D", "pulse", "sset", "Master", "mute"],
 
                 "unmute": ["amixer", "-D", "pulse", "sset", "Master", "unmute"],
 
             }
 
             if action in cmds:
-
                 subprocess.run(cmds[action], capture_output=True)
 
     except Exception:
@@ -2543,7 +2572,297 @@ def system_volume(action: str):
     speak(replies.get(action, "Done."))
 
 
+# ══════════════════════════════════════════════════════════════
+#  ⑱b FILE SEARCH — find files by name or type (voice-activated)
+# ══════════════════════════════════════════════════════════════
 
+def file_search(query: str):
+    """
+    Search for files by name or extension on the user's system.
+    Usage: 'find my resume', 'search for budget.xlsx', 'find all pdf files'
+    """
+    import fnmatch
+
+    q = query.lower().strip()
+    search_name = q
+    search_ext = None
+
+    # Detect extension-based search: "find all pdf files", "show me mp3 files"
+    ext_map = {
+        "pdf": ".pdf", "word": ".docx", "excel": ".xlsx", "powerpoint": ".pptx",
+        "mp3": ".mp3", "mp4": ".mp4", "jpg": ".jpg", "jpeg": ".jpeg",
+        "png": ".png", "txt": ".txt", "csv": ".csv", "zip": ".zip",
+        "py": ".py", "python": ".py", "js": ".js", "html": ".html",
+    }
+    for word, ext in ext_map.items():
+        if word in q and any(p in q for p in ("all", "files", "documents", "my")):
+            search_ext = ext
+            search_name = None
+            break
+
+    # Clean up "find", "search for", "my", etc. from the name query
+    if search_name:
+        for strip in ("find my", "find", "search for my", "search for",
+                      "look for my", "look for", "locate my", "locate",
+                      "where is my", "where is", "where are my", "where are",
+                      "show me my", "show me"):
+            if q.startswith(strip):
+                search_name = q[len(strip):].strip()
+                break
+
+    # Determine search root (Desktop + Downloads + Documents + Home)
+    home = os.path.expanduser("~")
+    search_roots = [
+        os.path.join(home, "Desktop"),
+        os.path.join(home, "Downloads"),
+        os.path.join(home, "Documents"),
+        home,
+    ]
+
+    speak(f"Searching for {'all ' + search_ext + ' files' if search_ext else search_name}. One moment.")
+    found = []
+    MAX = 5  # max results to speak
+
+    for root_dir in search_roots:
+        if not os.path.isdir(root_dir):
+            continue
+        for dirpath, dirnames, filenames in os.walk(root_dir):
+            # Skip hidden folders
+            dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+            for fname in filenames:
+                if search_ext:
+                    if fname.lower().endswith(search_ext):
+                        found.append(os.path.join(dirpath, fname))
+                else:
+                    if search_name and search_name in fname.lower():
+                        found.append(os.path.join(dirpath, fname))
+                if len(found) >= 20:
+                    break
+            if len(found) >= 20:
+                break
+        if len(found) >= 20:
+            break
+
+    if not found:
+        speak(f"I could not find any files matching that. Try a different name or check your folders.")
+        return
+
+    # Speak top results
+    spoken = found[:MAX]
+    for i, path in enumerate(spoken, 1):
+        short = os.path.basename(path)
+        folder = os.path.basename(os.path.dirname(path))
+        speak(f"Result {i}: {short}, in {folder}.")
+        print(f"  [{i}] {path}")
+
+    if len(found) > MAX:
+        speak(f"And {len(found) - MAX} more results. Check the terminal for the full list.")
+        for path in found[MAX:]:
+            print(f"  [+] {path}")
+
+    speak("Would you like me to open any of those?")
+
+
+# ══════════════════════════════════════════════════════════════
+#  ⑱c EXPANDED WEB SEARCH — Bing + DuckDuckGo HTML fallback
+# ══════════════════════════════════════════════════════════════
+
+def _bing_snippet(query: str) -> str:
+    """Scrape a short answer snippet from Bing search results."""
+    try:
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
+            )
+        }
+        resp = requests.get(
+            f"https://www.bing.com/search?q={quote_plus(query)}&setlang=en",
+            headers=headers,
+            timeout=9,
+        )
+        html = resp.text
+        # Bing featured snippet patterns
+        patterns = [
+            r'<p class="b_algoSlug[^"]*">(.*?)</p>',
+            r'<div class="b_snippet"[^>]*>(.*?)</div>',
+            r'<span class="b_strippedLink[^"]*">(.*?)</span>',
+        ]
+        for pat in patterns:
+            for m in re.findall(pat, html, re.DOTALL):
+                clean = re.sub(r"<[^>]+>", "", m).strip()
+                clean = re.sub(r"\s+", " ", clean)
+                if len(clean) > 60:
+                    return clean[:600]
+    except Exception:
+        pass
+    return ""
+
+
+def _ddg_html_snippet(query: str) -> str:
+    """Scrape DuckDuckGo HTML results page as a fallback."""
+    try:
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 Chrome/120 Safari/537.36"
+            )
+        }
+        resp = requests.get(
+            f"https://html.duckduckgo.com/html/?q={quote_plus(query)}",
+            headers=headers,
+            timeout=9,
+        )
+        html = resp.text
+        # Extract result snippets
+        for m in re.findall(r'class="result__snippet"[^>]*>(.*?)</a>', html, re.DOTALL):
+            clean = re.sub(r"<[^>]+>", "", m).strip()
+            clean = re.sub(r"\s+", " ", clean)
+            if len(clean) > 60:
+                return clean[:600]
+    except Exception:
+        pass
+    return ""
+
+
+def web_search_expanded(query: str, open_browser_fallback: bool = True):
+    """
+    Enhanced search pipeline with 4 sources:
+      1. DuckDuckGo Instant Answer API
+      2. Google snippet scrape
+      3. Bing snippet scrape
+      4. DuckDuckGo HTML page scrape
+      5. Open browser fallback
+    """
+    _filler()
+
+    answer = _ddg_instant(query)
+    if answer:
+        speak(answer[:520])
+        print(f"\n  [Source: DuckDuckGo Instant]\n  {answer[:250]}...\n")
+        return
+
+    answer = _google_snippet(query)
+    if answer:
+        speak(answer[:520])
+        print(f"\n  [Source: Google]\n  {answer[:250]}...\n")
+        return
+
+    answer = _bing_snippet(query)
+    if answer:
+        speak(answer[:520])
+        print(f"\n  [Source: Bing]\n  {answer[:250]}...\n")
+        return
+
+    answer = _ddg_html_snippet(query)
+    if answer:
+        speak(answer[:520])
+        print(f"\n  [Source: DuckDuckGo HTML]\n  {answer[:250]}...\n")
+        return
+
+    if open_browser_fallback:
+        speak(f"I couldn\'t find a quick answer. Opening Google for \'{query}\'.")
+        wb.open(f"https://www.google.com/search?q={quote_plus(query)}")
+
+
+# ══════════════════════════════════════════════════════════════
+#  ⑱d WEB APP LAUNCHER — open specific web apps with paths
+# ══════════════════════════════════════════════════════════════
+
+WEB_APPS = {
+    # Google Workspace
+    "google docs": "https://docs.google.com/document/u/0/",
+    "google sheets": "https://docs.google.com/spreadsheets/u/0/",
+    "google slides": "https://docs.google.com/presentation/u/0/",
+    "google forms": "https://docs.google.com/forms/u/0/",
+    "google drive": "https://drive.google.com/drive/",
+    "google calendar": "https://calendar.google.com/calendar/r",
+    "google meet": "https://meet.google.com/",
+    "google keep": "https://keep.google.com/",
+    "google photos": "https://photos.google.com/",
+    "google translate": "https://translate.google.com/",
+    "gmail": "https://mail.google.com/mail/u/0/",
+    "google maps": "https://www.google.com/maps",
+    # Productivity
+    "notion": "https://www.notion.so/",
+    "trello": "https://trello.com/",
+    "asana": "https://app.asana.com/",
+    "monday": "https://monday.com/",
+    "clickup": "https://app.clickup.com/",
+    "airtable": "https://airtable.com/",
+    "linear": "https://linear.app/",
+    "basecamp": "https://basecamp.com/",
+    # Dev / Code
+    "github": "https://github.com/",
+    "gitlab": "https://gitlab.com/",
+    "replit": "https://replit.com/",
+    "codepen": "https://codepen.io/",
+    "codesandbox": "https://codesandbox.io/",
+    "vercel": "https://vercel.com/dashboard",
+    "netlify": "https://app.netlify.com/",
+    "heroku": "https://dashboard.heroku.com/",
+    "railway": "https://railway.app/",
+    # Design
+    "figma": "https://figma.com/",
+    "canva": "https://www.canva.com/",
+    "framer": "https://framer.com/",
+    "whimsical": "https://whimsical.com/",
+    "miro": "https://miro.com/app/",
+    "excalidraw": "https://excalidraw.com/",
+    "lucidchart": "https://lucidchart.com/",
+    # Communication
+    "slack": "https://app.slack.com/",
+    "discord": "https://discord.com/app",
+    "telegram web": "https://web.telegram.org/",
+    "whatsapp web": "https://web.whatsapp.com/",
+    "zoom": "https://zoom.us/",
+    # Finance / Crypto
+    "zerodha": "https://kite.zerodha.com/",
+    "groww": "https://groww.in/",
+    "binance": "https://www.binance.com/",
+    "tradingview": "https://www.tradingview.com/",
+    # AI Tools
+    "chatgpt": "https://chat.openai.com/",
+    "claude": "https://claude.ai/",
+    "gemini": "https://gemini.google.com/",
+    "perplexity": "https://www.perplexity.ai/",
+    "openrouter": "https://openrouter.ai/",
+    "hugging face": "https://huggingface.co/",
+    # Storage / Files
+    "dropbox": "https://www.dropbox.com/home",
+    "onedrive": "https://onedrive.live.com/",
+    "icloud": "https://www.icloud.com/",
+    "box": "https://app.box.com/",
+}
+
+
+def open_web_app(query: str):
+    """
+    Open a specific web application. Handles:
+      'open google docs', 'launch figma', 'go to notion', etc.
+    Returns True if a web app was found and opened.
+    """
+    q = query.lower().strip()
+    # Strip open verbs
+    for verb in ("open ", "launch ", "go to ", "load ", "take me to ",
+                 "start ", "navigate to ", "bring up ", "show me "):
+        if q.startswith(verb):
+            q = q[len(verb):].strip()
+            break
+
+    # Try longest-match
+    best_key = ""
+    for key in WEB_APPS:
+        if key in q and len(key) > len(best_key):
+            best_key = key
+
+    if best_key:
+        url = WEB_APPS[best_key]
+        speak(f"Opening {best_key}.")
+        wb.open(url)
+        return True
+    return False
 
 
 # ══════════════════════════════════════════════════════════════
@@ -2553,15 +2872,12 @@ def system_volume(action: str):
 # ══════════════════════════════════════════════════════════════
 
 
-
 def ask_ai(user_message: str, reset: bool = False) -> str:
-
     """Send a message to the AI — auto-tries all models if one fails."""
 
     global OPENROUTER_MODEL
 
     if not OPENROUTER_API_KEY or "paste-your" in OPENROUTER_API_KEY:
-
         return (
 
             "AI is not configured, sir. "
@@ -2570,13 +2886,8 @@ def ask_ai(user_message: str, reset: bool = False) -> str:
 
         )
 
-
-
     if reset:
-
         _history.clear()
-
-
 
     _history.append({"role": "user", "content": user_message})
 
@@ -2584,9 +2895,8 @@ def ask_ai(user_message: str, reset: bool = False) -> str:
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}] + _history[-20:]
 
-
-
-    for model in OPENROUTER_MODELS:
+    model_list = ([PREFERRED_PAID_MODEL] + OPENROUTER_MODELS) if USE_PAID_MODEL else OPENROUTER_MODELS
+    for model in model_list:
 
         try:
 
@@ -2606,13 +2916,13 @@ def ask_ai(user_message: str, reset: bool = False) -> str:
 
                 json={
 
-                    "model":       model,
+                    "model": model,
 
-                    "max_tokens":  2048,
+                    "max_tokens": 2048,
 
                     "temperature": 0.72,
 
-                    "messages":    messages,
+                    "messages": messages,
 
                 },
 
@@ -2622,14 +2932,10 @@ def ask_ai(user_message: str, reset: bool = False) -> str:
 
             data = resp.json()
 
-
-
             if resp.status_code == 401:
-
                 return "Invalid API key, sir. Please check the key at the top of the script."
 
             if resp.status_code == 429:
-
                 continue  # rate limited — try next model
 
             if "error" in data:
@@ -2637,12 +2943,9 @@ def ask_ai(user_message: str, reset: bool = False) -> str:
                 msg = data["error"].get("message", "")
 
                 if any(x in msg for x in ("No endpoints", "not found", "unavailable")):
-
                     continue  # model down — try next
 
                 return f"AI error: {msg}"
-
-
 
             reply = _clean_for_speech(data["choices"][0]["message"]["content"])
 
@@ -2658,18 +2961,12 @@ def ask_ai(user_message: str, reset: bool = False) -> str:
 
             continue  # try next model
 
-
-
     _history.pop()
 
     return "All AI models are currently unavailable. Please try again in a moment, sir."
 
 
-
-
-
 def ai_query(query: str, search_first: bool = False):
-
     """
 
     Ask AI with smart length control.
@@ -2687,7 +2984,6 @@ def ai_query(query: str, search_first: bool = False):
     instant = _instant_reply(query)
 
     if instant:
-
         sep = "─" * 54
 
         print(f"\n  {sep}")
@@ -2712,11 +3008,7 @@ def ai_query(query: str, search_first: bool = False):
 
     )
 
-
-
     _filler()
-
-
 
     if search_first:
 
@@ -2744,8 +3036,6 @@ def ai_query(query: str, search_first: bool = False):
 
         reply = ask_ai(f"{length_hint} User query: {query}")
 
-
-
     sep = "─" * 54
 
     print(f"\n  {sep}")
@@ -2754,12 +3044,7 @@ def ai_query(query: str, search_first: bool = False):
 
     print(f"  {sep}\n")
 
-
-
     speak(reply)
-
-
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -2769,9 +3054,7 @@ def ai_query(query: str, search_first: bool = False):
 # ══════════════════════════════════════════════════════════════
 
 
-
 def handle(query: str) -> bool:
-
     """
 
     Route a query to the correct function.
@@ -2781,29 +3064,23 @@ def handle(query: str) -> bool:
     """
 
     if not query or len(query.strip()) < 2:
-
         return True
 
-
-
     q = query.strip().lower()
-
-
 
     # ── EXIT ─────────────────────────────────────────────────
 
     if any(p in q for p in (
 
-        "goodbye", "bye", "go offline", "exit", "quit",
+            "goodbye", "bye", "go offline", "exit", "quit",
 
-        "stop listening", "shut up", "shut yourself down",
+            "stop listening", "shut up", "shut yourself down",
 
-        "see you later", "that's all for now", "you can go",
+            "see you later", "that's all for now", "you can go",
 
-        "turn yourself off", "close yourself", "bye bye",
+            "turn yourself off", "close yourself", "bye bye",
 
     )):
-
         farewells = [
 
             "Going offline. Have a productive day, sir.",
@@ -2820,168 +3097,142 @@ def handle(query: str) -> bool:
 
         return False
 
-
-
     # ── SYSTEM POWER ─────────────────────────────────────────
 
     if any(p in q for p in ("shut down my mac", "power off my mac", "shutdown computer")):
-
         speak("Shutting down your system.")
 
         subprocess.run(["osascript", "-e", 'tell app "System Events" to shut down'])
 
         return False
 
-
-
     if any(p in q for p in ("restart my mac", "reboot my mac", "restart computer")):
-
         speak("Restarting your system. Back in a moment.")
 
         subprocess.run(["osascript", "-e", 'tell app "System Events" to restart'])
 
         return False
 
-
-
     if any(p in q for p in ("sleep", "put to sleep", "lock my mac")):
 
         if any(p in q for p in ("my mac", "computer", "screen", "mac")):
-
             speak("Putting your Mac to sleep.")
 
             subprocess.run(["pmset", "sleepnow"])
 
             return True
 
-
-
     # ── TIME ─────────────────────────────────────────────────
 
     if any(p in q for p in ("what time", "current time", "tell me the time",
 
-                             "what's the time", "check the time", "the time",
+                            "what's the time", "check the time", "the time",
 
-                             "what is the time", "whats the time", "time is it",
+                            "what is the time", "whats the time", "time is it",
 
-                             "time right now", "time now", "give me the time")):
-
-        tell_time(); return True
+                            "time right now", "time now", "give me the time")):
+        tell_time();
+        return True
 
     if q.strip() in ("time", "time?", "time please"):
-
-        tell_time(); return True
-
-
+        tell_time();
+        return True
 
     # ── DATE ─────────────────────────────────────────────────
 
     if any(p in q for p in ("what date", "today's date", "what day is",
 
-                             "what is today", "current date", "what's today",
+                            "what is today", "current date", "what's today",
 
-                             "what's the date")):
-
-        tell_date(); return True
+                            "what's the date")):
+        tell_date();
+        return True
 
     if q.strip() in ("date", "today"):
-
-        tell_date(); return True
-
-
+        tell_date();
+        return True
 
     if any(p in q for p in ("date and time", "time and date")):
-
-        tell_datetime(); return True
-
-
+        tell_datetime();
+        return True
 
     # ── WIFI / NETWORK ───────────────────────────────────────
 
     if any(p in q for p in ("wifi", "wi-fi", "what network", "am i connected",
 
-                             "internet connection", "which network")):
-
-        get_wifi(); return True
-
-
+                            "internet connection", "which network")):
+        get_wifi();
+        return True
 
     # ── VOLUME ───────────────────────────────────────────────
 
     if any(p in q for p in ("volume up", "turn up", "louder",
 
-                             "increase volume", "raise volume")):
-
-        system_volume("up"); return True
+                            "increase volume", "raise volume")):
+        system_volume("up");
+        return True
 
     if any(p in q for p in ("volume down", "turn down", "quieter",
 
-                             "decrease volume", "lower the volume", "reduce volume")):
-
-        system_volume("down"); return True
+                            "decrease volume", "lower the volume", "reduce volume")):
+        system_volume("down");
+        return True
 
     if any(p in q for p in ("max volume", "full volume", "maximum volume")):
-
-        system_volume("max"); return True
+        system_volume("max");
+        return True
 
     if any(p in q for p in ("mute", "go silent", "shut the sound",
 
-                             "silence the audio")):
-
-        system_volume("mute"); return True
+                            "silence the audio")):
+        system_volume("mute");
+        return True
 
     if any(p in q for p in ("unmute", "sound on", "turn sound back on",
 
-                             "restore audio", "restore volume")):
-
-        system_volume("unmute"); return True
-
-
+                            "restore audio", "restore volume")):
+        system_volume("unmute");
+        return True
 
     # ── SCREENSHOT ───────────────────────────────────────────
 
     if any(p in q for p in ("screenshot", "take a screenshot", "capture the screen",
 
-                             "screen capture", "take a picture of my screen")):
-
-        screenshot(); return True
-
-
+                            "screen capture", "take a picture of my screen")):
+        screenshot();
+        return True
 
     # ── MUSIC ────────────────────────────────────────────────
 
-    if any(p in q for p in ("play music", "i wanna listen", "play some music", "play a song",
+    if any(p in q for p in ("play music", "play some music", "play a song",
 
-                             "put on music", "play something")):
+                            "put on music", "play something")):
 
         song = q
 
         for t in ("play music", "play some music", "play a song",
 
                   "put on music", "play something", "play"):
-
             song = song.replace(t, "")
 
-        play_music(song.strip()); return True
+        play_music(song.strip());
+        return True
 
-
-
-    # ── WEATHER ────────────────
+    # ── WEATHER ──────────────────────────────────────────────
 
     if any(p in q for p in ("weather", "temperature outside", "how hot is it",
 
-                             "how cold is it", "will it rain", "forecast",
+                            "how cold is it", "will it rain", "forecast",
 
-                             "should i carry an umbrella", "is it going to rain",
+                            "should i carry an umbrella", "is it going to rain",
 
-                             "what's the weather")):
+                            "what's the weather")):
 
         city = None
 
         for prep in (" in ", " at ", " for ", " of "):
 
             if prep in q:
-
                 part = q.split(prep, 1)[1].strip()
 
                 # take first word as city (strip punctuation)
@@ -2990,15 +3241,14 @@ def handle(query: str) -> bool:
 
                 break
 
-        get_weather(city); return True
+        get_weather(city);
+        return True
 
+    # ── NEWS — AI answers directly; browser only if user says "open news" ──
 
+    if any(p in q for p in ("news", "headlines", "what's happening",
 
-    # ── NEWS — AI answers directly; browser only if user says "open news" ---
-
-    if any(p in q for p in ("news", "headlines", "what's happening in the world",
-
-                             "latest news", "current events", "current affairs ", "top stories")):
+                            "latest news", "current events", "top stories")):
 
         if any(p in q for p in ("open news", "show me news", "go to news",
 
@@ -3011,7 +3261,6 @@ def handle(query: str) -> bool:
                       "show me news about", "open news", "show me news",
 
                       "go to news", "open headlines"):
-
                 topic = topic.replace(t, "").strip()
 
             get_news(topic)
@@ -3021,9 +3270,6 @@ def handle(query: str) -> bool:
             ai_query(query, search_first=True)
 
         return True
-
-
-###############################################################################
 
     # ── WIKIPEDIA ────────────────────────────────────────────
 
@@ -3042,7 +3288,6 @@ def handle(query: str) -> bool:
         topic = q
 
         for t in sorted(wiki_triggers, key=len, reverse=True):
-
             topic = topic.replace(t, "").strip()
 
         if topic:
@@ -3051,31 +3296,42 @@ def handle(query: str) -> bool:
 
         else:
 
-            speak("What topic would you like me to look up on the Wikipedia??")
+            speak("What topic would you like me to look up on Wikipedia?")
 
         return True
 
-#------------------------------------------------------------------------------------------------------------------#
+    # ── FILE SEARCH ──────────────────────────────────────────
+    file_triggers = (
+        "find my ", "find ", "search for my ", "search for ",
+        "look for my ", "look for ", "locate my ", "locate ",
+        "where is my ", "where is ", "where are my ", "where are ",
+        "show me my files", "find all ",
+    )
+    if any(p in q for p in file_triggers) and any(
+            p in q for p in ("file", "document", "pdf", "photo", "image",
+                             "video", "music", "mp3", "mp4", "excel",
+                             "word", "folder", "my ", "resume", "report")
+    ):
+        file_search(q);
+        return True
 
     # ── YOUTUBE SEARCH ───────────────────────────────────────
 
     if any(p in q for p in ("search youtube", "youtube search", "find on youtube",
 
-                             "look up on youtube", "play on youtube",
+                            "look up on youtube", "play on youtube",
 
-                             "search youtube for")):
+                            "search youtube for")):
 
         topic = q
 
         for t in ("search youtube for", "search youtube", "youtube search",
 
                   "find on youtube", "look up on youtube", "play on youtube"):
-
             topic = topic.replace(t, "").strip()
 
-        search_youtube(topic); return True
-
-
+        search_youtube(topic);
+        return True
 
     # ── SEARCH IN CHROME ─────────────────────────────────────
 
@@ -3083,9 +3339,9 @@ def handle(query: str) -> bool:
 
                             "google in chrome", "open chrome and search",
 
-                             "look up in chrome", "find in chrome",
+                            "look up in chrome", "find in chrome",
 
-                             "search chrome for")):
+                            "search chrome for")):
 
         topic = q
 
@@ -3094,7 +3350,6 @@ def handle(query: str) -> bool:
                   "google in chrome", "open chrome and search",
 
                   "look up in chrome", "find in chrome", "search chrome for"):
-
             topic = topic.replace(t, "").strip()
 
         search_in_chrome(topic) if topic else speak(
@@ -3105,13 +3360,9 @@ def handle(query: str) -> bool:
 
         return True
 
-
-
     # ── EXPLICIT WEB SEARCH — only when user says search/google ─────
 
     web_triggers = (
-
-        "google it up", "could you refer google,"
 
         "search on google", "search google", "google search",
 
@@ -3134,80 +3385,67 @@ def handle(query: str) -> bool:
         topic = q
 
         for t in sorted(web_triggers, key=len, reverse=True):
-
             topic = topic.replace(t, "").strip()
 
         if not topic and len(_history) >= 2:
-
             topic = _history[-2].get("content", "").strip()[:120]
 
-        web_search(topic) if topic else speak("What would you like me to search for?")
+        web_search_expanded(topic) if topic else speak("What would you like me to search for?")
 
         return True
 
-
+    # ── WEB APPS (direct app URLs — more specific than WEBSITES dict) ──
+    if any(q.startswith(v.strip()) for v in _OPEN_VERBS):
+        if open_web_app(q):
+            return True
 
     # ── OPEN APPS / WEBSITES (with optional Chrome) ──────────
 
     if any(q.startswith(v.strip()) for v in _OPEN_VERBS) or any(
 
-        p in q for p in _CHROME_HINTS
+            p in q for p in _CHROME_HINTS
 
     ):
-
-        open_app(q); return True
-
-
+        open_app(q);
+        return True
 
     # ── JOKES ────────────────────────────────────────────────
 
     if any(p in q for p in ("joke", "tell me a joke", "make me laugh",
 
-                             "i'm bored tell me a joke"
-
-                             "something funny", "hear a joke")):
-
-        speak(pyjokes.get_joke()); return True
-
-
+                            "something funny", "hear a joke")):
+        speak(pyjokes.get_joke());
+        return True
 
     # ── IDENTITY ─────────────────────────────────────────────
 
     if any(p in q for p in ("what is your name", "who are you",
 
-                             "what are you called", "introduce yourself")):
-
+                            "what are you called", "introduce yourself")):
         name = load_name()
 
-        speak(f"I am {name}, your personal AI assistant. How may I be of service today?")
+        speak(f"I am {name}, your personal AI assistant. How may I be of service?")
 
         return True
 
-
-
     if any(p in q for p in ("change your name", "rename yourself",
 
-                             "i'll call you", "call yourself")):
+                            "i'll call you", "call yourself")):
+        set_name();
+        return True
 
-        set_name(); return True
-
-
-    #==========================================================
-    #
-    #
     # ── HELP ─────────────────────────────────────────────────
 
     if any(p in q for p in ("help", "what can you do", "your capabilities",
 
-                             "list features", "what commands",
+                            "list features", "what commands",
 
-                             "what do you know", "what are you capabilities")):
-
+                            "what do you know", "capabilities")):
         speak(
 
             "Here is what I can do, sir. "
 
-            "Tell you the exact time and date. "
+            "Tell you the time and date. "
 
             "Check the weather for any city. "
 
@@ -3225,55 +3463,36 @@ def handle(query: str) -> bool:
 
             "Just speak naturally — I will figure it out."
 
-            "Perform basic tasks on your system."
         )
 
         return True
 
+    # ── CLEAR MEMORY ─────────────────────────────────────────
 
-    #===========================================================================
-    #THIS FEATURE IS USED TO DETECT WHICH WORDS MEANS TO CLEAR CHAT MEMORY CACHE
-    #
-    #
-    # ── CLEAR MEMORY ─────────────────────────────────────────-----------------
+    if any(p in q for p in ("clear memory", "forget everything",
 
-    if any(p in q for p in ("clear memory", "clear cache",
+                            "reset conversation", "clear history",
 
-                             "system reset", "new", "chat reset"
-
-                             "reset conversation", "clear history",
-
-                             "start fresh", "new conversation")):
-
+                            "start fresh", "new conversation")):
         _history.clear()
 
-        speak("Conversation memory system caches all cleared. Refreshed, sir!")
+        speak("Conversation memory cleared. Clean slate, sir.")
 
         return True
 
-
-    #=================================================================================
-    # THIS FEATURE IS FOR SEARCH RELATED TO CURRENT EVENTS AND HAPPENINGS IN THE WORLD
-    #=================================================================================
     # ── LIVE / CURRENT EVENTS → web context + AI ─────────────
 
     live_words = ("latest", "current", "right now", "today's",
-
-                  "latest happenings", "updates of the day",
 
                   "this week", "recently", "who won", "what happened",
 
                   "breaking", "just announced", "just released")
 
     if any(p in q for p in live_words):
+        ai_query(query, search_first=True);
+        return True
 
-        ai_query(query, search_first=True); return True
-
-
-    #=====================================================
-    #WORDS TO DETECT MATHEMATICAL OPERATIONS
-    #
-    # ── MATHS / CALCULATIONS ────
+    # ── MATHS / CALCULATIONS ─────────────────────────────────
 
     math_words = ("calculate", "what is", "how much is", "solve",
 
@@ -3281,26 +3500,17 @@ def handle(query: str) -> bool:
 
                   "square root", "percentage", "percent of",
 
-                  "sum", "add", "subtract", "divide", "multiply",
-
-                   "integrate", "cube root", "factorise",
-
                   "to the power", "factorial", "integral", "derivative")
 
     if any(p in q for p in math_words):
+        ai_query(query);
+        return True
 
-        ai_query(query); return True
-
-    #=============================================================================
-    # THIS FEATURE IS FOR REFERING THE ASSISTANT TO NOT USE AI AND SPEND TOKEN FOR
-    #CASUALR CHAT INSTEAD ITS PRESET WITH CASUAL CHAT
-    #=============================================================================
-    # ── CASUAL CHIT-CHAT — go straight to AI, no search needed on the web --
-    #============================================================================
+    # ── CASUAL CHIT-CHAT — go straight to AI, no search needed ──
 
     casual_patterns = (
 
-        "hi", "hello", "hey", "sup", "wassup", "what's up", "whats up", "supp"<
+        "hi", "hello", "hey", "sup", "wassup", "what's up", "whats up",
 
         "how are you", "how r u", "you good", "you okay",
 
@@ -3316,24 +3526,20 @@ def handle(query: str) -> bool:
 
         "i'm bored", "im bored", "entertain me",
 
-        "what do you think", "your thoughts", "your opinion", "what do you feel about it"<
+        "what do you think", "your thoughts", "your opinion",
 
     )
 
     if any(p in q for p in casual_patterns) or len(q.split()) <= 4:
+        ai_query(query);
+        return True
 
-        ai_query(query); return True
-
+    # ── CATCH-ALL: everything else → AI answers directly ────────────
 
     ai_query(query)
 
     return True
 
-
-
-#========================================================================
-# THIS FEATURE GIVEN BELOW IS TO TEST IF THE CODE IS WORKING OR NOT
-#========================================================================
 
 # ══════════════════════════════════════════════════════════════
 
@@ -3342,22 +3548,16 @@ def handle(query: str) -> bool:
 # ══════════════════════════════════════════════════════════════
 
 
-
 if __name__ == "__main__":
 
     # Quick test without mic: python3 jarvis.py "open youtube in chrome"
 
     if len(sys.argv) > 1:
-
         handle(" ".join(sys.argv[1:]).lower())
 
         sys.exit(0)
 
-######################################################################################
-
     wishme()
-
-
 
     try:
 
@@ -3366,11 +3566,9 @@ if __name__ == "__main__":
             query = takecommand()
 
             if not query:
-
                 continue
 
             if not handle(query):
-
                 break
 
     except KeyboardInterrupt:
@@ -3379,68 +3577,6 @@ if __name__ == "__main__":
 
         sys.exit(0)
 
-
-#================================================================
-#  UPDATES-TRIAL TEST NOTES BELOW
-#================================================================
-# NEW FEATURES COMING IS TESTING GOING
-#
-#MSG PPL ON WHATSAPP USING VOICE COMMAND NEED TO SET NAMES HERE IN CODE FILE BUT SPECIFIC
-#
-#LOOK UP FILES OR DOCUMENTS WITH FILE SEARCH COMMAND
-#
-#CALLING SOMEONE FROM YOUR DEVICE
-#
-#SEARCH FILES ON THE SYSTEM
-#
-#OPEN SPECIFIC FILES OR FOLDERS
-#
-#SHUTDOWN OR SLEEP OR LOCKSCREEN DEVICE NEVER OPEN BECAUSE FEATURE MAY BE ABUSED
-#
-#ALLOW INTEGRATION OF HIGHER AND PAID MODELS ALSO VIA OPEN ROUTER (PAID API USERS CAN AVAIL THIS FEATURE)
-#
-#ADD MORE APPS TO LAUNCH FEATURE
-#
-#ADD MORE WEBSITES TO OPEN
-#
-#THINKING PROCESS TO BE MORE NATURAL
-#
-#MORE CHAT FEATURES AND DATA TRAINING FOR CHAT MODE
-#
-#CHAT MEMORY IS A FEATURE THAT ONE MAY NEED TO ENABLE OR DISABLE AS PER THEIR NEEDS
-#
-#EFFICIENT SPEECH RECOGNITION FOR PROPER RESPONSES
-#
-#CASUAL CHAT TRAINING TO USE ABOVE FEATURE OF MEMORY AND INTEGRATION OF GPT CHAT MODE
-#
-#CHATBOT EFFICIENCY
-#
-#HELP MODE FOR SUPPORT AND A SUPPORT GUIDE FOR TROUBLESHOOTING SOME COMMON ISSUES
-#LIKE REQUIREMENTS RELATED AND SYSTEM AS ITS A CROSS PLATFORM TOO
-#
-#EFFICIENCY OF EXISTING TOOLS IS INCREASED AND MORE WORDS ADDED
-#FOR RECOGNITION
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 #
 #
 #
