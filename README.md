@@ -17,7 +17,7 @@ The assistant is capable of handling both conversational AI tasks and real opera
 
 # What WGM Can Do
 
-## 🤖 AI Conversations
+## AI Conversations
 
 WGM can answer questions, explain concepts, summarize topics, and hold natural conversations using OpenRouter AI models.
 
@@ -30,7 +30,7 @@ Example:
 
 ---
 
-## 🎙️ Voice Command Support
+##  Voice Command Support
 
 The assistant supports microphone-based voice interaction for hands-free control.
 
@@ -44,7 +44,7 @@ Example:
 
 ---
 
-## 🌐 Web Search + Information
+##  Web Search + Information
 
 WGM can search the web, fetch information, and provide quick responses from online sources.
 
@@ -57,7 +57,7 @@ Features include:
 
 ---
 
-## 📂 File Searching
+##  File Searching
 
 Search local files directly through commands.
 
@@ -70,7 +70,7 @@ Example:
 
 ---
 
-## 💻 App + Website Launcher
+##  App + Website Launcher
 
 Launch installed applications or websites quickly using commands.
 
@@ -87,7 +87,7 @@ Supported examples:
 
 ---
 
-## 🔊 System Controls
+##  System Controls
 
 WGM can interact with basic system functionality like:
 
