@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W.G.M. — AI Interface</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- Animated grid background -->
+<canvas id="grid-canvas"></canvas>
+
+<!-- Corner HUD frames -->
+<div class="corner tl"><span class="corner-label">SYS:ONLINE</span></div>
+<div class="corner tr"><span class="corner-label" id="clock-display">00:00:00</span></div>
+<div class="corner bl"><span class="corner-label">VER:4.0</span></div>
+<div class="corner br"><span class="corner-label">WGM-AI</span></div>
+
+<!-- Voice listening overlay -->
+<div id="voice-overlay">
+  <div class="voice-ring">
+    <canvas id="waveform-canvas" width="120" height="120"></canvas>
+    <div class="voice-icon">🎙</div>
+  </div>
+  <div class="voice-label">LISTENING</div>
+  <div class="voice-hint">// speak your command //</div>
+  <button class="voice-cancel" onclick="cancelVoice()">[ CANCEL ]</button>
+</div>
+
+<!-- Speaking overlay (shows when WGM is talking) -->
+<div id="speak-overlay">
+  <div class="speak-bars">
+    <div class="speak-bar"></div><div class="speak-bar"></div>
+    <div class="speak-bar"></div><div class="speak-bar"></div>
+    <div class="speak-bar"></div><div class="speak-bar"></div>
+    <div class="speak-bar"></div>
+  </div>
+  <div class="speak-label">W.G.M. SPEAKING</div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-hex">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="24,2 43,13 43,35 24,46 5,35 5,13"
+          stroke="#00d4ff" stroke-width="1.5" fill="rgba(0,212,255,0.05)"/>
+        <polygon points="24,8 37,15.5 37,30.5 24,38 11,30.5 11,15.5"
+          stroke="#0066ff" stroke-width="1" fill="none" opacity="0.6"/>
+        <polygon points="24,14 31,18 31,26 24,30 17,26 17,18"
+          stroke="#00d4ff" stroke-width="0.5" fill="rgba(0,212,255,0.08)" opacity="0.8"/>
+        <text x="24" y="28" text-anchor="middle"
+          fill="#00d4ff" font-family="Orbitron" font-size="11" font-weight="900">W</text>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">W.G.M.</div>
+      <div class="logo-sub">// PERSONAL AI INTERFACE //</div>
+    </div>
+  </div>
+
+  <div class="header-center">
+    <div class="hud-stat">
+      <div class="hud-label">STATUS</div>
+      <div class="hud-val" id="status-text">ONLINE</div>
+    </div>
+    <div class="hud-divider"></div>
+    <div class="hud-stat">
+      <div class="hud-label">SESSION</div>
+      <div class="hud-val" id="msg-count">000</div>
+    </div>
+    <div class="hud-divider"></div>
+    <div class="hud-stat">
+      <div class="hud-label">AUDIO</div>
+      <div class="hud-val" id="audio-status">ON</div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <button class="audio-toggle-btn" id="audio-toggle-btn" onclick="toggleAudio()" title="Toggle voice output">
+      <span id="audio-icon">🔊</span>
+    </button>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="text-mode-btn" onclick="setMode('text')">TEXT</button>
+      <button class="mode-btn" id="voice-mode-btn" onclick="setMode('voice')">VOICE</button>
+    </div>
+  </div>
+</header>
+
+<!-- Chat messages -->
+<div id="chat"></div>
+
+<!-- Input area -->
+<footer>
+  <div class="input-wrapper">
+    <div class="input-prefix">&gt;_</div>
+    <textarea id="msg-input" placeholder="enter command..." rows="1"></textarea>
+    <button class="btn" id="mic-btn" onclick="activateMic()" title="Voice input">🎤</button>
+    <button class="btn" id="send-btn" onclick="sendMessage()" title="Send (Enter)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="hint-bar">
+    <span class="hint-chip" onclick="fillInput('what time is it')">time</span>
+    <span class="hint-chip" onclick="fillInput('tell me a joke')">joke</span>
+    <span class="hint-chip" onclick="fillInput('open youtube')">youtube</span>
+    <span class="hint-chip" onclick="fillInput('weather in Mumbai')">weather</span>
+    <span class="hint-chip" onclick="fillInput('search latest AI news')">ai news</span>
+    <span class="hint-chip" onclick="fillInput('who are you')">who are you</span>
+    <span class="hint-chip" onclick="fillInput('battery status')">battery</span>
+  </div>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
