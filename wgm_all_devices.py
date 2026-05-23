@@ -3100,30 +3100,41 @@ def handle(query: str) -> bool:
         return False
 
     # ── SYSTEM POWER ─────────────────────────────────────────
+  
 
-    if any(p in q for p in ("shut down my mac", "power off my mac", "shutdown computer")):
+    if any(p in q for p in ("shut down my mac", "power off my mac", "shutdown computer",
+                            "shut down my computer", "power off computer")):
         speak("Shutting down your system.")
-
-        subprocess.run(["osascript", "-e", 'tell app "System Events" to shut down'])
-
+        if OS == "Darwin":
+            subprocess.run(["osascript", "-e", 'tell app "System Events" to shut down'])
+        elif OS == "Windows":
+            subprocess.run(["shutdown", "/s", "/t", "5"])
+        else:
+            subprocess.run(["shutdown", "-h", "now"])
         return False
 
-    if any(p in q for p in ("restart my mac", "reboot my mac", "restart computer")):
+    if any(p in q for p in ("restart my mac", "reboot my mac", "restart computer",
+                            "reboot computer", "restart my computer")):
         speak("Restarting your system. Back in a moment.")
-
-        subprocess.run(["osascript", "-e", 'tell app "System Events" to restart'])
-
+        if OS == "Darwin":
+            subprocess.run(["osascript", "-e", 'tell app "System Events" to restart'])
+        elif OS == "Windows":
+            subprocess.run(["shutdown", "/r", "/t", "5"])
+        else:
+            subprocess.run(["reboot"])
         return False
 
-    if any(p in q for p in ("sleep", "put to sleep", "lock my mac")):
-
+    if any(p in q for p in ("sleep", "put to sleep", "lock my mac",
+                            "lock my computer", "lock screen")):
         if any(p in q for p in ("my mac", "computer", "screen", "mac")):
-            speak("Putting your Mac to sleep.")
-
-            subprocess.run(["pmset", "sleepnow"])
-
+            speak("Putting your system to sleep.")
+            if OS == "Darwin":
+                subprocess.run(["pmset", "sleepnow"])
+            elif OS == "Windows":
+                subprocess.run(["rundll32.exe", "powrprof.dll,SetSuspendState", "0,1,0"])
+            else:
+                subprocess.run(["systemctl", "suspend"])
             return True
-
     # ── TIME ─────────────────────────────────────────────────
 
     if any(p in q for p in ("what time", "current time", "tell me the time",
