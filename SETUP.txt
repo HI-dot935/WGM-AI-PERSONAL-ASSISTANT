@@ -1,49 +1,129 @@
-# ══════════════════════════════════════════════════════
-#  WGM Voice Assistant v4.0 — requirements.txt
-#  Works on: Windows 10/11 · macOS 10.15+ · Linux
-#  Python 3.9+
-# ══════════════════════════════════════════════════════
+╔══════════════════════════════════════════════════════════════╗
+║  WGM — AI Personal Assistant  v5.0                          ║
+║  Setup Guide  ·  Windows · macOS · Linux                    ║
+╚══════════════════════════════════════════════════════════════╝
 
-# ── CORE (required on all platforms) ─────────────────
-SpeechRecognition~=3.10.4   # microphone input
-requests~=2.31.0             # web search + AI + weather
-wikipedia~=1.4.0             # Wikipedia lookups
-pyjokes==0.6.0               # jokes
-psutil~=5.9.0                # battery (cross-platform)
-pyttsx3~=2.90                # TTS on Windows & Linux
+────────────────────────────────────────────────────────────────
+ STEP 1 — PRE-INSTALL (platform-specific, do this FIRST)
+────────────────────────────────────────────────────────────────
 
-# ── MICROPHONE BACKEND ────────────────────────────────
-# macOS:   brew install portaudio  then  pip install pyaudio
-# Windows: pip install pyaudio
-# Linux:   sudo apt install portaudio19-dev  then  pip install pyaudio
-pyaudio~=0.2.14
+  macOS:
+    brew install portaudio
 
-# ── WINDOWS ONLY ─────────────────────────────────────
-# Uncomment for proper volume control on Windows:
-# pycaw==20230625
-# comtypes~=1.2.0
+  Linux (Ubuntu 20+):
+    sudo apt update
+    sudo apt install portaudio19-dev python3-pyaudio espeak ffmpeg
 
-# Uncomment for screenshots on Windows (if no scrot):
-# pyautogui~=0.9.54
+  Windows:
+    No pre-steps needed. pip handles everything.
 
-# ══════════════════════════════════════════════════════
-#  PLATFORM SETUP
-# ══════════════════════════════════════════════════════
-#
-#  macOS (Catalina 10.15+):
-#    brew install portaudio
-#    pip3 install -r requirements.txt
-#    python3 jarvis.py
-#
-#  Windows 10/11:
-#    pip install -r requirements.txt
-#    pip install pycaw comtypes    (optional, for volume control)
-#    python jarvis.py
-#
-#  Linux (Ubuntu 20+):
-#    sudo apt install portaudio19-dev python3-pyaudio espeak scrot
-#    pip3 install -r requirements.txt
-#    python3 jarvis.py
-#
-#  Get your FREE key at: openrouter.ai → Keys → Create Key
-# ══════════════════════════════════════════════════════
+────────────────────────────────────────────────────────────────
+ STEP 2 — INSTALL PYTHON DEPENDENCIES
+────────────────────────────────────────────────────────────────
+
+    pip install -r requirements.txt
+
+  (macOS/Linux use pip3 if pip points to Python 2)
+
+────────────────────────────────────────────────────────────────
+ STEP 3 — ADD YOUR OPENROUTER API KEY
+────────────────────────────────────────────────────────────────
+
+  Get a free key at:  https://openrouter.ai → Keys → Create Key
+
+  Open  wgm_all_devices.py  and find this line near the top:
+
+    OPENROUTER_API_KEY = "your api key"
+
+  Replace  "your api key"  with your actual key.
+
+  Optional — set your city for weather:
+
+    DEFAULT_CITY = "Mumbai"
+
+────────────────────────────────────────────────────────────────
+ STEP 4A — RUN (Voice / Terminal Mode)
+────────────────────────────────────────────────────────────────
+
+    python3 wgm_all_devices.py          ← interactive mic mode
+
+  Quick test without mic:
+
+    python3 wgm_all_devices.py "what time is it"
+    python3 wgm_all_devices.py "open youtube"
+    python3 wgm_all_devices.py "weather in Pune"
+    python3 wgm_all_devices.py "latest AI news"
+    python3 wgm_all_devices.py "find all pdf files"
+
+────────────────────────────────────────────────────────────────
+ STEP 4B — RUN (Web UI Mode — browser interface)
+────────────────────────────────────────────────────────────────
+
+  First install Flask if you haven't:
+
+    pip install flask
+
+  Then start the web server:
+
+    python3 web/server.py
+
+  Open in browser:
+
+    Local:    http://localhost:5000
+    Network:  http://<your-ip>:5000   ← shown in terminal output
+
+  The web UI works from any browser on the same Wi-Fi network,
+  including your phone or tablet.
+
+────────────────────────────────────────────────────────────────
+ PROJECT STRUCTURE
+────────────────────────────────────────────────────────────────
+
+  WGM-AI-PERSONAL-ASSISTANT/
+  ├── wgm_all_devices.py       ← main assistant brain
+  ├── requirements.txt
+  ├── SETUP.txt
+  └── web/
+      ├── server.py            ← Flask web server
+      ├── static/
+      │   ├── app.js
+      │   └── style.css
+      └── templates/
+          └── index.html
+
+────────────────────────────────────────────────────────────────
+ REQUIREMENTS (auto-installed via requirements.txt)
+────────────────────────────────────────────────────────────────
+
+  requests          web search + AI + weather
+  wikipedia         Wikipedia lookups
+  pyjokes           jokes
+  pyttsx3           TTS on Windows & Linux
+  SpeechRecognition microphone input
+  pyaudio           microphone backend
+  pyautogui         screenshots + automation
+  flask             web UI server
+
+────────────────────────────────────────────────────────────────
+ TROUBLESHOOTING
+────────────────────────────────────────────────────────────────
+
+  "No module named flask"
+    → pip install flask
+
+  "FileNotFoundError: wgm_all_devices.py"
+    → Make sure you run server.py from inside the project root:
+       cd WGM-AI-PERSONAL-ASSISTANT
+       python3 web/server.py
+
+  "Connection to WGM core failed" in browser
+    → Check the terminal where server.py is running for errors
+    → Make sure your OpenRouter API key is set
+
+  PyAudio install fails on macOS
+    → brew install portaudio   then   pip3 install pyaudio
+
+  PyAudio install fails on Linux
+    → sudo apt install portaudio19-dev python3-pyaudio
+
+══════════════════════════════════════════════════════════════
