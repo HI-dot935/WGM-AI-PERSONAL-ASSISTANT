@@ -237,6 +237,23 @@ Performance depends on internet speed, API response times, and hardware. The ass
 
 ---
 
+## AI Usage
+
+WGM was built using a combination of manual coding and AI assistance.
+
+- **Vibe coding with AI** — parts of the codebase were built with AI assistance
+  (Claude) for debugging, fixing errors, and generating boilerplate code.
+- **Manual coding** — core logic, features, architecture, and overall structure
+  were written and designed manually.
+- **OpenRouter API** — powers WGM's conversational AI using free models
+  (Qwen, Llama, Gemma, Mistral) with automatic fallback support.
+- **Browser Speech Synthesis** — the web UI uses the browser's built-in
+  Web Speech API for text-to-speech output.
+- **Speech Recognition** — voice input via the SpeechRecognition library
+  in terminal mode and Web Speech API in the browser.
+
+---
+
 # Project Status
 
 WGM is still actively evolving. Current focus areas include smarter automation, cleaner architecture, local AI integration, memory/context improvements, and more reliable cross-platform support. The project is primarily experimental and focused on learning, automation, and AI integration workflows.
