@@ -28,11 +28,11 @@ HOW TO RUN:
 
 QUICK TEST (no mic):
 
-  python jarvis.py "what time is it"
+  python wgm_all_devices.py "what time is it"
 
-  python jarvis.py "what is 1 + 1"
+  python wgm_all_devices.py "what is 1 + 1"
 
-  python jarvis.py "give me a report on India GDP"
+  python wgm_all_devices.py "give me a report on India GDP"
 
 
 
@@ -2345,7 +2345,7 @@ def play_music(song_name: str = ""):
     if not os.path.isdir(MUSIC_DIR):
         speak("Your Music folder is empty. Opening Spotify.")
 
-        subprocess.Popen(["open", "-a", "Spotify"])
+        wb.open("https://open.spotify.com")
 
         return
 
@@ -3552,7 +3552,7 @@ def handle(query: str) -> bool:
 
 if __name__ == "__main__":
 
-    # Quick test without mic: python3 jarvis.py "open youtube in chrome"
+    # Quick test without mic: python3 wgm_all_devices.py "open youtube in chrome"
 
     if len(sys.argv) > 1:
         handle(" ".join(sys.argv[1:]).lower())
