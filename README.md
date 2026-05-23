@@ -1,3 +1,4 @@
+<img width="1366" height="768" alt="Screenshot 2026-05-22 at 1 26 17 PM" src="https://github.com/user-attachments/assets/4a214e63-82b6-4b68-8bf6-db80190b7213" />
 # WGM — AI Personal Automation Assistant
 
 > A cross-platform AI-powered automation assistant built in Python, inspired by J.A.R.V.I.S-style interaction and workflow automation.
