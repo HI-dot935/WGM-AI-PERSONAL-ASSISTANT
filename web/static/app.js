@@ -233,15 +233,27 @@ function speakText(text) {
 
     const utterance = new SpeechSynthesisUtterance(text);
 
-    utterance.rate = 1;
-    utterance.pitch = 0.9;
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
     utterance.volume = 1;
 
     const voices = speechSynthesis.getVoices();
 
     const selected =
         voices.find(v =>
-            v.name.toLowerCase().includes("david")
+            v.name.toLowerCase().includes("google uk english female")
+        ) ||
+        voices.find(v =>
+            v.name.toLowerCase().includes("samantha")
+        ) ||
+        voices.find(v =>
+            v.name.toLowerCase().includes("victoria")
+        ) ||
+        voices.find(v =>
+            v.name.toLowerCase().includes("karen")
+        ) ||
+        voices.find(v =>
+            v.name.toLowerCase().includes("female")
         ) ||
         voices.find(v =>
             v.name.toLowerCase().includes("google")
