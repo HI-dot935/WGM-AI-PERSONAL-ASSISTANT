@@ -1,0 +1,9 @@
+run = "python3 web/server.py"
+entrypoint = "web/server.py"
+
+[nix]
+channel = "stable-23_11"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
